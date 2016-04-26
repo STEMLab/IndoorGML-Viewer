@@ -1,5 +1,5 @@
   var gl;
-  var indoor;
+
     function initGL(canvas) {
         
         try {
@@ -111,14 +111,16 @@
     }
 
   
-    var vertexPositionBufferArray = [];
-    var vertexLineBufferArray = [];
-    var vertexColorBufferArray = [];
-    var vertexLineColorBufferArray = [];
-    var verticesAverageArray = [];
+
     
 
     function  moveToCenter(myvertices){
+        if(floorflag!=1){
+            floorx=Math.floor(myvertices[0]);
+            floory=Math.floor(myvertices[1]);
+            floorz=Math.floor(myvertices[2]);
+            floorflag=1;
+        }
          for (var i=0; i<myvertices.length/3; i++) {
             myvertices[i*3] -= floorx;
             myvertices[i*3+1] -= floory;
@@ -149,54 +151,12 @@
     var floorz;
     var floorflag=0;
     var celldictionary={};
-    function makeWebglGeometry(){
-        var cells=indoor.primalSpaceFeature;
-        //console.log(indoor);
-        for(var i=0;i<cells.length;i++){
-            var cell=[];
-            var surfaces=cells[i].geometry;
-            for(var j=0;j<surfaces.length;j++){
-                var surface=triangulate(surfaces[j].exterior);
-                //console.log("after return"+surface);
-                //surfaces[j].exterior=surface;
-                cell.push(surface);
-            }
-    
-            celldictionary[cells[i].cellid]=cell;
-            
-        }
-        //console.log(celldictionary);
-        //console.log(indoor);
-        addNewVertices([1.0, 0.3, 0.3, 0.3]);
-    }
+
     function triangulate(myvertices){
-        if(floorflag!=1){
-            floorx=Math.floor(myvertices[0]);
-            floory=Math.floor(myvertices[1]);
-            floorz=Math.floor(myvertices[2]);
-            floorflag=1;
-        }
-     moveToCenter(myvertices);
+
+        moveToCenter(myvertices);
         var partition=[];
         var newmyvertices=[];
-
-         
-      
-       /* if(myvertices.length<=15){
-            var firstpoint=myvertices.slice(0,3);
-            partition=partition.concat(firstpoint);
-            var temp=myvertices.slice(0,3);
-            partition=partition.concat(temp);
-            temp=myvertices.slice(0,3);
-            partition=partition.concat(temp);
-            if(myvertices.length==6){
-                partition=partition.concat(firstpoint);
-                partition=partition.concat(temp);
-                temp=myvertices.slice(0,3);
-                partition=partition.concat(temp);
-            }
-         }
-        else{*/
             calVector(myvertices);
             
             var max=Math.max(nx,ny,nz);
@@ -236,10 +196,147 @@
                         partition.push(myvertices[triangle[i]*3+2]);
 
                     }   
-        //}
-        //console.log("before return"+partition);
         return partition;
         
+    }
+    function makeWebglGeometry(){
+        var cells=indoor.primalSpaceFeature;
+        //console.log(indoor);
+        for(var i=0;i<cells.length;i++){
+            var cell=[];
+            var surfaces=cells[i].geometry;
+            for(var j=0;j<surfaces.length;j++){
+                var surface=triangulate(surfaces[j].exterior);
+                //console.log("after return"+surface);
+                //surfaces[j].exterior=surface;
+                cell.push(surface);
+            }
+    
+            celldictionary[cells[i].cellid]=cell;
+            
+        }
+        //console.log(celldictionary);
+        //console.log(indoor);
+        addNewVertices([1.0, 0.3, 0.3, 0.3]);
+
+        var graphs=indoor.multiLayeredGraph;
+        //console.log(indoor);
+        for(var i=0;i<graphs.length;i++){
+            var graph=[];
+            var nodes=[];
+            var states=graphs[i].stateMember;
+            for(var j=0;j<states.length;j++){
+                moveToCenter(states[j].position);
+                var state=states[j].position;
+                //console.log(states[j].position);
+                //surfaces[j].exterior=surface;
+                nodes.push(state);
+            }
+            graph.push(nodes);
+
+            var edges=[];
+            var trasitions=graphs[i].transitionMember;
+            for(var j=0;j<trasitions.length;j++){
+                moveToCenter(trasitions[j].line);
+                var trasition=trasitions[j].line;
+                //console.log("after return"+surface);
+                //surfaces[j].exterior=surface;
+                edges.push(trasition);
+            }
+            graph.push(edges);
+
+            networkdictionary[graphs[i].graphid]=graph;
+            
+        }
+        addState();
+    }
+    var vertexPositionBufferArray = [];
+    var vertexLineBufferArray = [];
+
+
+
+    var vertexColorBufferArray = [];
+    var vertexLineColorBufferArray = [];
+
+    var networkdictionary={};
+    
+
+    var verticesAverageArray = [];
+
+    var indoor;
+    var sphereVertexPositionBuffer;//
+    var sphereVertexColorBuffer;//
+    var sphereVertexIndexBuffer;
+    var sphereNormalBuffer;//
+    function addState(){
+         var latitudeBands = 30; //위도 구간수
+        var longitudeBands = 30; //경도 구간수
+        var radius = 0.5; //반지름 
+        var vertexPositionData = []; //정점 위치 정보 
+
+    for (var latNumber = 0; latNumber <= latitudeBands; latNumber++) {
+            //위도별 각도 계산
+        var theta = latNumber * Math.PI / latitudeBands;
+        var sinTheta = Math.sin(theta);
+        var cosTheta = Math.cos(theta);
+        for (var longNumber = 0; longNumber <= longitudeBands; longNumber++) {
+                //경도별 각도 계산 
+            var phi = longNumber * 2 * Math.PI / longitudeBands;
+            var sinPhi = Math.sin(phi);
+            var cosPhi = Math.cos(phi);
+
+            var x = cosPhi * sinTheta;
+            var y = cosTheta;
+            var z = sinPhi * sinTheta;
+            //uv 좌표 계산 
+            var u = 1 - (longNumber / longitudeBands);
+            var v = 1 - (latNumber / latitudeBands);
+        
+            vertexPositionData.push(radius * x);
+            vertexPositionData.push(radius * y);
+            vertexPositionData.push(radius * z);
+        }
+    }
+ //인덱스 계산 
+    var indexData = [];
+    for (var latNumber = 0; latNumber < latitudeBands; latNumber++) {
+        for (var longNumber = 0; longNumber < longitudeBands; longNumber++) {
+            var first = (latNumber * (longitudeBands + 1)) + longNumber;
+            var second = first + longitudeBands + 1;
+            indexData.push(first);
+            indexData.push(second);
+            indexData.push(first + 1);
+
+            indexData.push(second);
+            indexData.push(second + 1);
+            indexData.push(first + 1);
+        }
+    }
+
+         sphereVertexPositionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData), gl.STATIC_DRAW);
+        sphereVertexPositionBuffer.itemSize = 3;
+        sphereVertexPositionBuffer.numItems = vertexPositionData.length/3;
+
+        sphereVertexColorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer);
+
+        var unpackedColors = [];
+        for (var i=0; i<vertexPositionData.length/3; i++)
+        for(var j=0; j<4; j++)
+            unpackedColors.push(1.0);
+    
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(unpackedColors), gl.STATIC_DRAW);
+        sphereVertexColorBuffer.itemSize = 4;
+        sphereVertexColorBuffer.numItems = vertexPositionData.length/3;
+
+        sphereVertexIndexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer);
+    
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexData), gl.STATIC_DRAW);
+    sphereVertexIndexBuffer.itemSize = 1;
+    sphereVertexIndexBuffer.numItems = indexData.length;  
     }
     function addNewVertices (drawcolor) {
         
@@ -316,7 +413,238 @@
         
 
     }
+    var xdeg = 0.0;
+    var ydeg = 0.0;
+    var zdeg = 0.0;
 
+    var dis = 15.0;
+    function drawScene() {
+        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+
+        mat4.identity(mvMatrix);
+
+        
+        calcCameraPositionAnimation();
+
+        
+        // mat4.translate(mvMatrix, [-currentCameraX*Math.sin(degToRad(ydeg)), -currentCameraY, -35.0*Math.cos(degToRad(ydeg))]);  // 화면 보는 시점
+
+
+        mat4.translate(mvMatrix, [
+            0.0,
+            0.0, 
+            -dis
+        ]);  // 화면 보는 시점
+        mat4.multiply(mvMatrix, moonRotationMatrix);
+        mat4.translate(mvMatrix, [
+            -currentCameraX,
+            -currentCameraY, 
+            0.0
+        ]);  // 화면 보는 시점
+
+
+        
+        
+
+
+
+
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+        gl.enable(gl.BLEND);
+        gl.disable(gl.DEPTH_TEST);
+        gl.uniform1f(shaderProgram.alphaUniform, 0.5);
+
+
+        gl.uniform3f(
+            shaderProgram.ambientColorUniform,
+            0.2,
+            0.2,
+            0.2
+        );
+
+        var lightingDirection = [
+            -0.25,
+            -0.25,
+            -1.0
+        ];
+        var adjustedLD = vec3.create();
+        vec3.normalize(lightingDirection, adjustedLD);
+        vec3.scale(adjustedLD, -1);
+        gl.uniform3fv(shaderProgram.lightingDirectionUniform, adjustedLD);
+
+        gl.uniform3f(
+            shaderProgram.directionalColorUniform,
+            0.8,
+            0.8,
+            0.8
+        );
+
+        
+
+        for (var i=0; i<vertexPositionBufferArray.length; i++) {
+
+            mvPushMatrix();
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBufferArray[i]);
+            gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexPositionBufferArray[i].itemSize, gl.FLOAT, false, 0, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBufferArray[i]);
+            gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, vertexColorBufferArray[i].itemSize, gl.FLOAT, false, 0, 0);
+
+            setMatrixUniforms();
+            gl.drawArrays(gl.TRIANGLES, 0, vertexPositionBufferArray[i].numItems);
+            // gl.drawArrays(gl.QUAD_STRIP, 0, vertexPositionBufferArray[i].numItems);
+
+            mvPopMatrix();
+        }
+
+         for (var key in networkdictionary) {
+            var graph=networkdictionary[key];
+            var nodes=graph[0];
+            for(var i=0; i<nodes.length;i++){
+                //mvMatrix = translate(0.0, 0.0, 0.0);
+                mat4.identity(mvMatrix);
+
+                mat4.translate(mvMatrix, [
+                    0.0,
+                    0.0, 
+                    -dis
+                ]);  // 화면 보는 시점
+                mat4.multiply(mvMatrix, moonRotationMatrix);
+                mat4.translate(mvMatrix, [
+                    -currentCameraX,
+                    -currentCameraY, 
+                    0.0
+                ]);
+                var translateLoc=nodes[i];
+                //console.log(networkdictionary);
+                mvPushMatrix();
+                mat4.translate(mvMatrix, translateLoc);
+                gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer);
+                gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, sphereVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    
+
+                gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer);
+                gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, sphereVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        
+                gl.uniform1i(shaderProgram.samplerUniform, 0);
+
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer);
+                setMatrixUniforms();
+                //gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, flatten(mvMatrix));
+                gl.drawElements(gl.TRIANGLES, sphereVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+                //console.log(gl);
+                mvPopMatrix();
+            }
+        }
+        /*for (var i=0; i<vertexLineBufferArray.length; i++) {
+
+            mvPushMatrix();
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexLineBufferArray[i]);
+            gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexLineBufferArray[i].itemSize, gl.FLOAT, false, 0, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexLineColorBufferArray[i]);
+            gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, vertexLineColorBufferArray[i].itemSize, gl.FLOAT, false, 0, 0);
+
+            setMatrixUniforms();
+            gl.drawArrays(gl.LINE_STRIP, 0, vertexLineBufferArray[i].numItems);
+
+            mvPopMatrix();
+        }*/
+        
+    }
+    /*function flatten( v )
+{
+    if ( v.matrix === true ) {
+        v = transpose( v );
+    }
+
+    var n = v.length;
+    var elemsAreArrays = false;
+
+    if ( Array.isArray(v[0]) ) {
+        elemsAreArrays = true;
+        n *= v[0].length;
+    }
+
+    var floats = new Float32Array( n );
+
+    if ( elemsAreArrays ) {
+        var idx = 0;
+        for ( var i = 0; i < v.length; ++i ) {
+            for ( var j = 0; j < v[i].length; ++j ) {
+                floats[idx++] = v[i][j];
+            }
+        }
+    }
+    else {
+        for ( var i = 0; i < v.length; ++i ) {
+            floats[i] = v[i];
+        }
+    }
+
+    return floats;
+}*/
+/*function mult( u, v )
+{
+    var result = [];
+
+    if ( u.matrix && v.matrix ) {
+        if ( u.length != v.length ) {
+            throw "mult(): trying to add matrices of different dimensions";
+        }
+
+        for ( var i = 0; i < u.length; ++i ) {
+            if ( u[i].length != v[i].length ) {
+                throw "mult(): trying to add matrices of different dimensions";
+            }
+        }
+
+        for ( var i = 0; i < u.length; ++i ) {
+            result.push( [] );
+
+            for ( var j = 0; j < v.length; ++j ) {
+                var sum = 0.0;
+                for ( var k = 0; k < u.length; ++k ) {
+                    sum += u[i][k] * v[k][j];
+                }
+                result[i].push( sum );
+            }
+        }
+
+        result.matrix = true;
+
+        return result;
+    }
+    else {
+        if ( u.length != v.length ) {
+            throw "mult(): vectors are not the same dimension";
+        }
+
+        for ( var i = 0; i < u.length; ++i ) {
+            result.push( u[i] * v[i] );
+        }
+
+        return result;
+    }
+}*/
+/*function translate( x, y, z )
+{
+    if ( Array.isArray(x) && x.length == 3 ) {
+        z = x[2];
+        y = x[1];
+        x = x[0];
+    }
+
+    var result = mat4.create();
+    result[0][3] = x;
+    result[1][3] = y;
+    result[2][3] = z;
+
+    return result;
+}*/
 
 
 var verticesString;
@@ -488,110 +816,7 @@ var verticesString;
     }
 
 
-    var xdeg = 0.0;
-    var ydeg = 0.0;
-    var zdeg = 0.0;
-
-    var dis = 15.0;
-    function drawScene() {
-        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-        mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
-
-        mat4.identity(mvMatrix);
-
-        
-        calcCameraPositionAnimation();
-
-        
-        // mat4.translate(mvMatrix, [-currentCameraX*Math.sin(degToRad(ydeg)), -currentCameraY, -35.0*Math.cos(degToRad(ydeg))]);  // 화면 보는 시점
-
-
-        mat4.translate(mvMatrix, [
-            0.0,
-            0.0, 
-            -dis
-        ]);  // 화면 보는 시점
-        mat4.multiply(mvMatrix, moonRotationMatrix);
-        mat4.translate(mvMatrix, [
-            -currentCameraX,
-            -currentCameraY, 
-            0.0
-        ]);  // 화면 보는 시점
-
-
-        
-        
-
-
-
-
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
-        gl.enable(gl.BLEND);
-        gl.disable(gl.DEPTH_TEST);
-        gl.uniform1f(shaderProgram.alphaUniform, 0.5);
-
-
-        gl.uniform3f(
-            shaderProgram.ambientColorUniform,
-            0.2,
-            0.2,
-            0.2
-        );
-
-        var lightingDirection = [
-            -0.25,
-            -0.25,
-            -1.0
-        ];
-        var adjustedLD = vec3.create();
-        vec3.normalize(lightingDirection, adjustedLD);
-        vec3.scale(adjustedLD, -1);
-        gl.uniform3fv(shaderProgram.lightingDirectionUniform, adjustedLD);
-
-        gl.uniform3f(
-            shaderProgram.directionalColorUniform,
-            0.8,
-            0.8,
-            0.8
-        );
-
-        
-        for (var i=0; i<vertexPositionBufferArray.length; i++) {
-
-            mvPushMatrix();
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBufferArray[i]);
-            gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexPositionBufferArray[i].itemSize, gl.FLOAT, false, 0, 0);
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBufferArray[i]);
-            gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, vertexColorBufferArray[i].itemSize, gl.FLOAT, false, 0, 0);
-
-            setMatrixUniforms();
-            gl.drawArrays(gl.TRIANGLES, 0, vertexPositionBufferArray[i].numItems);
-            // gl.drawArrays(gl.QUAD_STRIP, 0, vertexPositionBufferArray[i].numItems);
-
-            mvPopMatrix();
-        }
-
-
-        /*for (var i=0; i<vertexLineBufferArray.length; i++) {
-
-            mvPushMatrix();
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertexLineBufferArray[i]);
-            gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexLineBufferArray[i].itemSize, gl.FLOAT, false, 0, 0);
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertexLineColorBufferArray[i]);
-            gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, vertexLineColorBufferArray[i].itemSize, gl.FLOAT, false, 0, 0);
-
-            setMatrixUniforms();
-            gl.drawArrays(gl.LINE_STRIP, 0, vertexLineBufferArray[i].numItems);
-
-            mvPopMatrix();
-        }*/
-        
-    }
-
+    
     
 
     function degToRad(degrees) {

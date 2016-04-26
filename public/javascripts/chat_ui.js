@@ -27,7 +27,7 @@ $(document).ready(function() {
     indoor=new Indoor();
     indoor.init(result);
     makeWebglGeometry();
-        tick();
+     animate();
   });
 
 });

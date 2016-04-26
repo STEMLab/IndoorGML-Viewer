@@ -109,7 +109,7 @@ var Transition=function(){
   if(typeof geometry !== 'undefined'){
     geometry=geometry.abstractCurve.value.posOrPointPropertyOrPointRep;
     for(var i=0;i<geometry.length;i++){
-      this.line.push(geometry[i].value.value);
+      this.line=this.line.concat(geometry[i].value.value);
     }
   }
   
@@ -120,7 +120,7 @@ var Transition=function(){
 
 
 
-
+var graphindex=1;
 var Graph = function(){
   this.graphid;
   this.graphname;
@@ -129,8 +129,12 @@ var Graph = function(){
 }
  Graph.prototype.init = function(jsoncontent) {
   //console.log(JSON.stringify(jsoncontent, null, 2));
- 
+  
   this.graphid=jsoncontent.id;
+  if(typeof this.graphid == 'undefined'){
+    this.graphid=graphindex;
+    graphindex++;
+  }
   this.graphname=jsoncontent.name;
   if(typeof this.graphname == 'undefined'){
     this.graphname=this.graphid;
