@@ -182,17 +182,23 @@ var InterLayerConnection=function(){
  }
  Indoor.prototype.init = function(jsoncontent) {
   var cells=jsoncontent.value.primalSpaceFeatures.primalSpaceFeatures.cellSpaceMember;
-  for(var i=0;i<cells.length;i++){
-    var c=new CellSpace();
-    c.init(cells[i].abstractFeature.value);
-    this.primalSpaceFeature.push(c);
+  if(typeof cells !=='undefined'){
+    for(var i=0;i<cells.length;i++){
+      var c=new CellSpace();
+      c.init(cells[i].abstractFeature.value);
+      this.primalSpaceFeature.push(c);
+    }
   }
+  
 
   var layers=jsoncontent.value.multiLayeredGraph.spaceLayers;
-  for(var i=0;i<layers.length;i++){
-    var g=new Graph();
-    g.init(layers[i].spaceLayerMember[0].spaceLayer);
-    this.multiLayeredGraph.push(g);
+  if(typeof layers !== 'undefined'){
+    for(var i=0;i<layers.length;i++){
+      var g=new Graph();
+      g.init(layers[i].spaceLayerMember[0].spaceLayer);
+      this.multiLayeredGraph.push(g);
+    }    
   }
+
 
 };

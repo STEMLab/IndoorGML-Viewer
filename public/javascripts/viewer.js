@@ -125,7 +125,7 @@
 
                     }
                 }
-                /*var geometry = new THREE.SphereBufferGeometry( 0.1, 32, 16 );
+                var geometry = new THREE.SphereBufferGeometry( 0.005, 32, 16 );
                 var boxGeometry = new THREE.BoxGeometry( 0.5, 0.5, 1 );
                 var material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
                 for(var key in networkdictionary){
@@ -153,7 +153,7 @@
                             g.push(line);
                     }
                     allgeometry[key]=g;
-                }*/
+                }
 
                 
             }
