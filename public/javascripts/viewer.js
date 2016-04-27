@@ -43,7 +43,7 @@
                 camera.updateProjectionMatrix();
                 renderer.setSize( window.innerWidth, window.innerHeight );
             }
-            
+
             function animate() {
                 requestAnimationFrame( animate );
                 render();
@@ -56,10 +56,10 @@
                 mouse.x = e.clientX;
                 mouse.y = e.clientY;
             }
-            
- 
 
-    
+
+
+
     var celldictionary={};
     var networkdictionary={};
     var allgeometry={};
@@ -77,7 +77,7 @@
                 }
             }
 
-        
+
             function createMesh(){
                 for (var key in celldictionary) {
                     var surfaces=celldictionary[key];
@@ -92,7 +92,7 @@
                         var mesh = new THREE.Mesh( geometry, material );
                         scene.add( mesh );
                         cell.push(mesh);
-                        
+
                     }
                     allgeometry[key]=cell;
                 }
@@ -155,7 +155,5 @@
                     allgeometry[key]=g;
                 }
 
-                
+
             }
-    
-   

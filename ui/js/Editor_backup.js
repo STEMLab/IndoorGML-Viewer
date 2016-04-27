@@ -116,7 +116,7 @@ Editor.prototype = {
 		this.scene.name = scene.name;
 		this.scene.userData = JSON.parse( JSON.stringify( scene.userData ) );
 
-		// avoid render per objectscene
+		// avoid render per object
 
 		this.signals.sceneGraphChanged.active = false;
 
@@ -130,6 +130,7 @@ Editor.prototype = {
 		this.signals.sceneGraphChanged.dispatch();
 
 	},
+
 	//
 
 	addObject: function ( object ) {

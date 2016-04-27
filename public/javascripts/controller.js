@@ -4,7 +4,7 @@ var reader = new FileReader();
 
         if(that.files && that.files[0]){
             var reader = new FileReader();
-            reader.onload = function (e) {  
+            reader.onload = function (e) {
                 var text=e.target.result;
 
                 if (text.length==0) {
@@ -17,12 +17,12 @@ var reader = new FileReader();
             };//end onload()
             reader.readAsText(that.files[0]);
         }//end if html5 filelist support
-    } 
+    }
 var socket = io.connect();
 
 $(document).ready(function() {
 
- 
+
   socket.once('parse', function(result) {
     indoor=new Indoor();
     indoor.init(result);
@@ -44,9 +44,9 @@ $(document).ready(function() {
                 //surfaces[j].exterior=surface;
                 cell.push(surface);
             }
-    
+
             celldictionary[cells[i].cellid]=cell;
-            
+
         }
 
 
@@ -73,7 +73,7 @@ $(document).ready(function() {
             graph.push(edges);
 
             networkdictionary[graphs[i].graphid]=graph;
-            
+
         }
         //camera.position.x = (maxx+lowx)/2;
         //camera.position.y = (maxy+lowy)/2;
@@ -106,12 +106,11 @@ $(document).ready(function() {
                     myvertices[i*3+1] /= floorx;
                     myvertices[i*3+2] /= floorx;
                 }
-        
-                for (var i=0; i<myvertices.length/3; i++) {
-                    myvertices[i*3] =Math.floor( myvertices[i*3]*1000000000)/1000000000
-                    myvertices[i*3+1] =Math.floor( myvertices[i*3+1]*1000000000)/1000000000
-                    myvertices[i*3+2] =Math.floor( myvertices[i*3+2]*1000000000)/1000000000
 
+                for (var i=0; i<myvertices.length/3; i++) {
+                    myvertices[i*3] =Math.floor( myvertices[i*3]*1000000000)/100000000
+                    myvertices[i*3+1] =Math.floor( myvertices[i*3+1]*1000000000)/100000000
+                    myvertices[i*3+2] =Math.floor( myvertices[i*3+2]*1000000000)/100000000
                 }
             }
             function calVector(myvertices){
@@ -130,52 +129,52 @@ $(document).ready(function() {
         var newmyvertices=[];
         var newinterior=[];
             calVector(myvertices);
-            
+
             var max=Math.max(nx,ny,nz);
                 if(nz==max){
 
                     for( var i=0;i<myvertices.length/3;i++){
-     
+
                         newmyvertices.push(myvertices[i*3]);
                         newmyvertices.push(myvertices[i*3+1]);
-                       
-                    }  
+
+                    }
                     for( var i=0;i<interior.length/3;i++){
-     
+
                         newinterior.push(interior[i*3]);
                         newinterior.push(interior[i*3+1]);
-                       
-                    }  
+
+                    }
 
                 }
                 else if(nx==max){
                      for(var i=0;i<myvertices.length/3;i++){
-     
+
                         newmyvertices.push(myvertices[i*3+1]);
                         newmyvertices.push(myvertices[i*3+2]);
 
-                    }   
+                    }
                     for( var i=0;i<interior.length/3;i++){
-     
+
                         newinterior.push(interior[i*3+1]);
                         newinterior.push(interior[i*3+2]);
-                       
-                    }  
-                    
+
+                    }
+
                 }
                 else{
                      for(var i=0;i<myvertices.length/3;i++){
-     
+
                         newmyvertices.push(myvertices[i*3]);
                         newmyvertices.push(myvertices[i*3+2]);
 
-                    }  
+                    }
                     for( var i=0;i<interior.length/3;i++){
-     
+
                         newinterior.push(interior[i*3]);
                         newinterior.push(interior[i*3+2]);
-                       
-                    }  
+
+                    }
                 }
                 var interiorStartIndex=newmyvertices.length/2 - 1;
                 var polygonwithhole=newmyvertices.concat(newinterior);
@@ -183,13 +182,13 @@ $(document).ready(function() {
                 var triangle = earcut(polygonwithhole,[interiorStartIndex]);
 
                     for(var i=0;i<triangle.length;i++){
-     
+
                         partition.push(myvertices[triangle[i]*3]);
                         partition.push(myvertices[triangle[i]*3+1]);
                         partition.push(myvertices[triangle[i]*3+2]);
 
-                    } 
+                    }
 
         return partition;
-        
+
     }

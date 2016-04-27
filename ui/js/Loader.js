@@ -26,21 +26,6 @@ var Loader = function ( editor ) {
 
 		switch ( extension ) {
 
-			case 'wrl':
-
-				reader.addEventListener( 'load', function ( event ) {
-
-					var contents = event.target.result;
-
-					var result = new THREE.VRMLLoader().parse( contents );
-
-					editor.execute( new SetSceneCommand( result ) );
-
-				}, false );
-				reader.readAsText( file );
-
-				break;
-
 			case 'gml': {
 
 				var socket = io.connect();
@@ -49,14 +34,27 @@ var Loader = function ( editor ) {
 					var contents = event.target.result;
 
 					socket.once('parse', function(result) {
-						var indoor = new Indoor();
-						indoor.init(result);
-						makeWebglGeometry();
-						 animate();
+
+
+							var indoor = new Indoor();
+							indoor.init(result);
+							var ic = new SetIndoorGMLCommand();
+							ic.makeGeometry(indoor);
+							var object = ic.createObject(indoor);
+
+
+							editor.execute( new AddObjectCommand( object ) );
+
+							/*
+							var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+							var mesh = new THREE.Mesh( geometry, new THREE.MeshStandardMaterial() );
+							mesh.name = 'Box ';
+
+							editor.execute( new AddObjectCommand( mesh ) );
+							*/
 					});
 
           socket.emit('content', contents);
-
 					//editor.execute( new SetSceneCommand( result ) );
 
 				}, false );
