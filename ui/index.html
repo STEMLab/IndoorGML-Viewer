@@ -9,8 +9,20 @@
 		<link href="css/main.css" rel="stylesheet" />
 		<link id="theme" href="css/dark.css" rel="stylesheet" />
 
+    <!-- Improt base library -->
 		<script src="js/libs/three.min.js"></script>
 		<script src="js/libs/system.min.js"></script>
+
+      <script src='http://code.jquery.com/jquery-1.8.0.min.js' type='text/javascript'></script>
+
+    <!-- Import Node.js Library -->
+    <script src='/socket.io/socket.io.js' type='text/javascript'></script>
+
+    <!-- Socket -->
+    <script src="js/socket/char_server.js"></script>
+
+    <!-- Model -->
+    <script src='js/model/Model.js' type='text/javascript'></script>
 
 		<script src="js/controls/EditorControls.js"></script>
 		<script src="js/controls/TransformControls.js"></script>
@@ -68,12 +80,8 @@
 		<script src="js/menubar/Menubar.js"></script>
 
 		<script src="js/menubar/Menubar.File.js"></script>
-		<script src="js/menubar/Menubar.Edit.js"></script>
-		<script src="js/menubar/Menubar.Add.js"></script>
-		<script src="js/menubar/Menubar.Play.js"></script>
-		<script src="js/menubar/Menubar.Examples.js"></script>
+		<script src="js/menubar/Menubar.Settings.js"></script>
 		<script src="js/menubar/Menubar.Help.js"></script>
-		<script src="js/menubar/Menubar.Status.js"></script>
 
 		<script src="js/Toolbar.js"></script>
 		<script src="js/Viewport.js"></script>
@@ -95,7 +103,6 @@
 		<!-- <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="qyqgfqd9j8z890t"></script> -->
 
 		<script>
-
 			window.URL = window.URL || window.webkitURL;
 			window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
 

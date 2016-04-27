@@ -13,6 +13,7 @@ var Editor = function () {
 
 	this.signals = {
 
+
 		// script
 
 		editScript: new SIGNALS.Signal(),

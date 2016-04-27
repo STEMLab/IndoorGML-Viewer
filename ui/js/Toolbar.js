@@ -13,7 +13,8 @@ var Toolbar = function ( editor ) {
 	container.add( buttons );
 
 	// translate / rotate / scale
-
+	/**
+	* @deprecated hgryoo
 	var translate = new UI.Button( 'translate' ).onClick( function () {
 
 		signals.transformModeChanged.dispatch( 'translate' );
@@ -57,7 +58,7 @@ var Toolbar = function ( editor ) {
 		signals.showGridChanged.dispatch( showGrid.getValue() );
 
 	}
-
+	*/
 	return container;
 
 }
