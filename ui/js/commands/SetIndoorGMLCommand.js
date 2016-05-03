@@ -13,12 +13,10 @@ var SetIndoorGMLCommand = function () {
 	this.type = 'SetIndoorGMLCommand';
 	this.name = 'Set IndoorGML';
 
-	this.floorflag = 0;
-	this.floorx = 0;
-	this.floory = 0;
-	this.floorz = 0;
+	this.scale = 0;
+	this.translate = [];
 };
-
+ 
 SetIndoorGMLCommand.prototype = {
 
 	execute: function () {
@@ -36,10 +34,19 @@ SetIndoorGMLCommand.prototype = {
 
 	},
 
-	makeGeometry : function(indoor) {
+  calCenter : function(maxmin_xyz) {
+      var boundingBoxLength=[maxmin_xyz[0]-maxmin_xyz[3],maxmin_xyz[1]-maxmin_xyz[4],maxmin_xyz[2]-maxmin_xyz[5]];
+      var maxLength=Math.max(boundingBoxLength[0],boundingBoxLength[1],boundingBoxLength[2]);
+      this.scale=20/maxLength;
+      this.translate=[-(boundingBoxLength[0]/2)-maxmin_xyz[3],-(boundingBoxLength[1]/2)-maxmin_xyz[4],-maxmin_xyz[5]];
+ 
+  },
+
+	makeGeometry : function(indoor,maxmin_xyz) {
 
 		var cells = indoor.primalSpaceFeature;
-        //console.log(indoor);
+    
+    this.calCenter(maxmin_xyz);
     for(var i = 0; i < cells.length; i++) {
         var cell = [];
         var surfaces = cells[i].geometry;
@@ -49,20 +56,50 @@ SetIndoorGMLCommand.prototype = {
 						this.transformCoordinates(surfaces[j].interior);
 
             var surface = this.triangulate(surfaces[j].exterior, surfaces[j].interior);
-            cell.push(surface);
+            //cell.push(surface);
+            cell=cell.concat(surface);
         }
         CellDictionary[ cells[i].cellid ] = cell;
     }
+    var graphs=indoor.multiLayeredGraph;
 
+        for(var i=0;i<graphs.length;i++){
+            var graph=[];
+            var nodes={};
+            var states=graphs[i].stateMember;
+            for(var j=0;j<states.length;j++){
+                this.transformCoordinates(states[j].position);
+                var state=states[j].position;
+                nodes[states[j].stateid]=state;
+                StateInformation[states[j].stateid]=states[j];
+            }
+            graph.push(nodes);
+
+            var edges={};
+            var trasitions=graphs[i].transitionMember;
+            for(var j=0;j<trasitions.length;j++){
+                this.transformCoordinates(trasitions[j].line);
+                var trasition=trasitions[j].line;
+                edges[trasitions[j].transitionid]= trasition;
+                TransitionInformation[trasitions[j].transitionid]=trasitions[j];
+            }
+            graph.push(edges);
+
+            NetworkDictionary[graphs[i].graphid]=graph;
+
+        }
+    //console.log(CellDictionary);
 	},
 
 	createObject : function(indoor) {
 
 		var group = new THREE.Object3D;
-
+    group.name='IndoorFeatures';
+    var primalSpaceFeatures = new THREE.Object3D;
+    primalSpaceFeatures.name='primalSpaceFeatures';
 		//Add mesh for surfaces of CellSpace
 		for (var key in CellDictionary) {
-        var surfaces = CellDictionary[key];
+        /*var surfaces = CellDictionary[key];
         var cell = [];
         for(var j = 0; j < surfaces.length; j++){
             var geometry = new THREE.BufferGeometry();
@@ -79,9 +116,26 @@ SetIndoorGMLCommand.prototype = {
             group.add( mesh );
             cell.push(mesh);
         }
-        AllGeometry[key] = cell;
-    }
+        AllGeometry[key] = cell;*/
+        var cell = CellDictionary[key];
 
+
+        var geometry = new THREE.BufferGeometry();
+        var vertices = new Float32Array( cell );
+
+
+        geometry.addAttribute('position', new THREE.BufferAttribute( vertices, 3 ) );
+        var material = new THREE.MeshStandardMaterial( { color: 0xffff00, opacity:0.3, transparent : true, side: THREE.DoubleSide} );
+        var mesh = new THREE.Mesh( geometry, material );
+
+        mesh.name = (key);
+
+        primalSpaceFeatures.add( mesh );
+        
+        //AllGeometry[key] = [mesh];
+
+    }
+    
 
 		//Add line for surfaces of CellSpace
 		var cells = indoor.primalSpaceFeature;
@@ -97,8 +151,8 @@ SetIndoorGMLCommand.prototype = {
             }
 
             var line = new THREE.Line( geometry, material );
-            group.add( line );
-            AllGeometry[ cells[i].cellid ].push(line);
+            primalSpaceFeatures.add( line );
+            //AllGeometry[ cells[i].cellid ].push(line);
             polygon = surfaces[j].interior;
             if(polygon.length != 0){
                 geometry = new THREE.Geometry();
@@ -107,26 +161,61 @@ SetIndoorGMLCommand.prototype = {
                 }
                 var line = new THREE.Line( geometry, material );
                 //console.log(polygon);
-                group.add( line );
-                AllGeometry[ cells[i].cellid ].push(line);
+                primalSpaceFeatures.add( line );
+                //AllGeometry[ cells[i].cellid ].push(line);
             }
         }
+
+        Information[cells[i].cellid]=cells[i];
     }
+    group.add(primalSpaceFeatures);
+    var MultiLayeredGraph = new THREE.Object3D;
+    MultiLayeredGraph.name='MultiLayeredGraph';
+    
+
+    var geometry = new THREE.SphereBufferGeometry( 0.03, 32, 16 );
+    var material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
+    for(var key in NetworkDictionary){
+      var spaceLayers = new THREE.Object3D;
+      spaceLayers.name = key;
+      var g=[];
+      var nodes=NetworkDictionary[key][0];
+      for(var i in nodes){
+          var mesh = new THREE.Mesh( geometry, material );
+          mesh.position.x=nodes[i][0];
+          mesh.position.y=nodes[i][1];
+          mesh.position.z=nodes[i][2];
+          mesh.name = i;
+          spaceLayers.add(mesh);
+          g.push(mesh);
+      }
+      var edges=NetworkDictionary[key][1];
+      var material = new THREE.LineBasicMaterial({color: 0x00ffff,linewidth:10});
+
+      for(var i in edges){
+          geometry = new THREE.Geometry();
+          for(var k=0;k<edges[i].length;k+=3){
+              geometry.vertices.push(new THREE.Vector3( edges[i][k], edges[i][k+1], edges[i][k+2]));
+          }
+          var line = new THREE.Line( geometry, material );
+          line.name = i;
+          spaceLayers.add(line);
+          g.push(line);
+      }
+      AllGeometry[key]=g;
+      MultiLayeredGraph.add(spaceLayers);
+    }
+    group.add(MultiLayeredGraph);
+    console.log(group);
 
 		return group;
 	},
 
 	transformCoordinates : function(myvertices) {
-      if(this.floorflag != 1) {
-          this.floorx = Math.floor(myvertices[0]);
-          this.floory = Math.floor(myvertices[1]);
-          this.floorz = Math.floor(myvertices[2]);
-          this.floorflag = 1;
-      }
-      for (var i = 0; i < myvertices.length / 3; i++) {
-          myvertices[i * 3] /= this.floorx;
-          myvertices[i * 3 + 1] /= this.floorx;
-          myvertices[i * 3 + 2] /= this.floorx;
+        for (var i = 0; i < myvertices.length / 3; i++) {
+          myvertices[i * 3] = (myvertices[i * 3] +this.translate[0]) * this.scale;
+          myvertices[i * 3 + 1] = (myvertices[i * 3 + 1] +this.translate[1]) * this.scale;
+          myvertices[i * 3 + 2] = (myvertices[i * 3 + 2] +this.translate[2]) * this.scale;
       }
 
       for (var i = 0; i < myvertices.length / 3; i++) {

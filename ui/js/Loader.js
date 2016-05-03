@@ -37,9 +37,9 @@ var Loader = function ( editor ) {
 
 
 							var indoor = new Indoor();
-							indoor.init(result);
+							var maxmin_xyz=indoor.init(result);
 							var ic = new SetIndoorGMLCommand();
-							ic.makeGeometry(indoor);
+							ic.makeGeometry(indoor,maxmin_xyz);
 							var object = ic.createObject(indoor);
 
 

@@ -1,24 +1,44 @@
 
+  this.floorflag = 0;
 
 var Polygon = function(){
   this.polyonid;
   this.exterior=[]; //float array[1,2,3,4,5,6]
   this.interior=[];
 }
- Polygon.prototype.init = function(jsoncontent) {
+ Polygon.prototype.init = function(jsoncontent,maxmin_xyz) {
   this.polyonid=jsoncontent.id;
   var epoints=jsoncontent.exterior.abstractRing.value.posOrPointPropertyOrPointRep;
   for(var i=0;i<epoints.length;i++){
-    this.exterior=this.exterior.concat(epoints[i].value.value);
-    //console.log(epoints[i].value.value+" : "+this.exterior);
+    var point=[epoints[i].value.value[0],epoints[i].value.value[2],epoints[i].value.value[1]];
+    this.exterior=this.exterior.concat(point);
+    if(floorflag==0){
+      floorflag=1;
+      maxmin_xyz=[point[0],point[1],point[2],point[0],point[1],point[2]];
+    }
+    else{
+  
+          maxmin_xyz[0]=Math.max(maxmin_xyz[0],point[0]);
+          maxmin_xyz[1]=Math.max(maxmin_xyz[1],point[1]);
+          maxmin_xyz[2]=Math.max(maxmin_xyz[2],point[2]);
+          maxmin_xyz[3]=Math.min(maxmin_xyz[3],point[0]);
+          maxmin_xyz[4]=Math.min(maxmin_xyz[4],point[1]);
+          maxmin_xyz[5]=Math.min(maxmin_xyz[5],point[2]);
+         
+    }
+
+    //
   }
+  
   var ipoints=jsoncontent.interior;
   if(typeof ipoints !== 'undefined'){
     ipoints=ipoints[0].abstractRing.value.posOrPointPropertyOrPointRep;
     for(var i=0; i<ipoints.length;i++){
-      this.interior=this.interior.concat(ipoints[i].value.value);
+      var point=[ipoints[i].value.value[0],ipoints[i].value.value[2],ipoints[i].value.value[1]];
+      this.interior=this.interior.concat(point);
     }
   }
+  return maxmin_xyz;
 };
 var CellSpace = function(){
   this.cellid;
@@ -26,7 +46,7 @@ var CellSpace = function(){
   this.geometry=[]; //Polygon array
   this.duality;
 }
- CellSpace.prototype.init = function(jsoncontent) {
+ CellSpace.prototype.init = function(jsoncontent,maxmin_xyz) {
   this.cellid=jsoncontent.id;
   var n=jsoncontent.name;
   if(typeof n !=='undefined'){
@@ -44,14 +64,14 @@ var CellSpace = function(){
     var surfaces=geod.abstractSolid.value.exterior.shell.surfaceMember;
     for(var i=0;i<surfaces.length;i++){
       var polygon=new Polygon();
-      polygon.init(surfaces[i].abstractSurface.value);
+      maxmin_xyz=polygon.init(surfaces[i].abstractSurface.value,maxmin_xyz);
       this.geometry.push(polygon);
     }
   }
   else{
     geod=jsoncontent.geometry2D;
   }
-
+  return maxmin_xyz;
 };
 
 
@@ -65,7 +85,7 @@ var State = function(){
   this.connects=[];
   this.duality;
 }
- State.prototype.init = function(jsoncontent) {
+ State.prototype.init = function(jsoncontent,maxmin_xyz) {
   //console.log(JSON.stringify(jsoncontent, null, 2));
   this.stateid=jsoncontent.id;
   //statename=jsoncontent.name[0].value;
@@ -82,9 +102,22 @@ var State = function(){
   }
   var geometry=jsoncontent.geometry;
   if(typeof geometry !== 'undefined'){
-    this.position=geometry.point.pos.value;
+    var point=geometry.point.pos.value;
+    this.position=[point[0],point[2],point[1]];
+    if(floorflag==0){
+      floorflag=1;
+      maxmin_xyz=[point[0],point[2],point[1],point[0],point[2],point[1]];
+    }
+    else{
+      maxmin_xyz[0]=Math.max(maxmin_xyz[0],point[0]);
+      maxmin_xyz[1]=Math.max(maxmin_xyz[1],point[2]);
+      maxmin_xyz[2]=Math.max(maxmin_xyz[2],point[1]);
+      maxmin_xyz[3]=Math.min(maxmin_xyz[3],point[0]);
+      maxmin_xyz[4]=Math.min(maxmin_xyz[4],point[2]);
+      maxmin_xyz[5]=Math.min(maxmin_xyz[5],point[1]);
+    }
   }
-
+  return maxmin_xyz;
   //console.log(this.position);
 };
 
@@ -98,7 +131,7 @@ var Transition=function(){
   this.connects=[]; //array of size 2
   this.line=[]; //point array
 }
- Transition.prototype.init = function(jsoncontent) {
+ Transition.prototype.init = function(jsoncontent,maxmin_xyz) {
   this.transitionid=jsoncontent.id;
   this.weight=jsoncontent.weight;
   var cons=jsoncontent.connects;
@@ -109,10 +142,23 @@ var Transition=function(){
   if(typeof geometry !== 'undefined'){
     geometry=geometry.abstractCurve.value.posOrPointPropertyOrPointRep;
     for(var i=0;i<geometry.length;i++){
-      this.line=this.line.concat(geometry[i].value.value);
+      var point=geometry[i].value.value;
+      this.line=this.line.concat([point[0],point[2],point[1]]);
+      if(floorflag==0){
+        floorflag=1;
+        maxmin_xyz=[point[0],point[2],point[1],point[0],point[2],point[1]];
+      }
+      else{
+        maxmin_xyz[0]=Math.max(maxmin_xyz[0],point[0]);
+        maxmin_xyz[1]=Math.max(maxmin_xyz[1],point[2]);
+        maxmin_xyz[2]=Math.max(maxmin_xyz[2],point[1]);
+        maxmin_xyz[3]=Math.min(maxmin_xyz[3],point[0]);
+        maxmin_xyz[4]=Math.min(maxmin_xyz[4],point[2]);
+        maxmin_xyz[5]=Math.min(maxmin_xyz[5],point[1]);
+      }
     }
   }
-
+  return maxmin_xyz;
   //console.log(this.line);
 };
 
@@ -127,7 +173,7 @@ var Graph = function(){
   this.stateMember=[]; //State array
   this.transitionMember=[]; //Transition array
 }
- Graph.prototype.init = function(jsoncontent) {
+ Graph.prototype.init = function(jsoncontent,maxmin_xyz) {
   //console.log(JSON.stringify(jsoncontent, null, 2));
 
   this.graphid=jsoncontent.id;
@@ -144,7 +190,7 @@ var Graph = function(){
   if(typeof states !== 'undefined'){
     for(var i=0;i<states.length;i++){
       var state=new State();
-      state.init(states[i].state);
+      maxmin_xyz=state.init(states[i].state,maxmin_xyz);
       this.stateMember.push(state);
     }
   }
@@ -154,11 +200,11 @@ var Graph = function(){
   if(typeof trans !== 'undefined'){
     for(var i=0;i<trans.length;i++){
       var transition=new Transition();
-      transition.init(trans[i].transition);
+      maxmin_xyz=transition.init(trans[i].transition,maxmin_xyz);
       this.transitionMember.push(transition);
     }
   }
-
+  return maxmin_xyz;
 };
 
 
@@ -181,11 +227,12 @@ var InterLayerConnection=function(){
     this.interLayerConnectionMember=[]; //InterLayerConnection array
  }
  Indoor.prototype.init = function(jsoncontent) {
+  var maxmin_xyz=[];
   var cells=jsoncontent.value.primalSpaceFeatures.primalSpaceFeatures.cellSpaceMember;
   if(typeof cells !=='undefined'){
     for(var i=0;i<cells.length;i++){
       var c=new CellSpace();
-      c.init(cells[i].abstractFeature.value);
+      maxmin_xyz=c.init(cells[i].abstractFeature.value,maxmin_xyz);
       this.primalSpaceFeature.push(c);
     }
   }
@@ -195,10 +242,11 @@ var InterLayerConnection=function(){
   if(typeof layers !== 'undefined'){
     for(var i=0;i<layers.length;i++){
       var g=new Graph();
-      g.init(layers[i].spaceLayerMember[0].spaceLayer);
+      maxmin_xyz=g.init(layers[i].spaceLayerMember[0].spaceLayer,maxmin_xyz);
       this.multiLayeredGraph.push(g);
     }
   }
+  return maxmin_xyz;
 
 
 };

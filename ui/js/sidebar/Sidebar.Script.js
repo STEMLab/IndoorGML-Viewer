@@ -18,7 +18,7 @@ Sidebar.Script = function ( editor ) {
 	container.addStatic( new UI.Text( 'Script' ).setTextTransform( 'uppercase' ) );
 	container.add( new UI.Break() );
 
-	//
+	
 
 	var scriptsContainer = new UI.Row();
 	container.add( scriptsContainer );

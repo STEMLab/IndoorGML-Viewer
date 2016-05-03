@@ -8,13 +8,14 @@ Sidebar.Properties = function ( editor ) {
 
 	var container = new UI.Span();
 
-	var objectTab = new UI.Text( 'OBJECT' ).onClick( onClick );
+	var objectTab = new UI.Text( 'PROPERTIES' ).onClick( onClick );
 	var geometryTab = new UI.Text( 'GEOMETRY' ).onClick( onClick );
 	var materialTab = new UI.Text( 'MATERIAL' ).onClick( onClick );
 
 	var tabs = new UI.Div();
 	tabs.setId( 'tabs' );
-	tabs.add( objectTab, geometryTab, materialTab );
+	tabs.add( objectTab );
+	//tabs.add( objectTab, geometryTab, materialTab );
 	container.add( tabs );
 
 	function onClick( event ) {
@@ -23,7 +24,7 @@ Sidebar.Properties = function ( editor ) {
 
 	}
 
-	//
+	
 
 	var object = new UI.Span().add(
 		new Sidebar.Object( editor )

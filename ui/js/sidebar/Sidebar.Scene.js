@@ -33,7 +33,7 @@ Sidebar.Scene = function ( editor ) {
 
 	// fog
 
-	var updateFogParameters = function () {
+	/*var updateFogParameters = function () {
 
 		var near = fogNear.getValue();
 		var far = fogFar.getValue();
@@ -41,9 +41,9 @@ Sidebar.Scene = function ( editor ) {
 
 		signals.fogParametersChanged.dispatch( near, far, density );
 
-	};
+	};*/
 
-	var fogTypeRow = new UI.Row();
+	/*var fogTypeRow = new UI.Row();
 	var fogType = new UI.Select().setOptions( {
 
 		'None': 'None',
@@ -116,19 +116,19 @@ Sidebar.Scene = function ( editor ) {
 	fogDensityRow.add( new UI.Text( 'Fog density' ).setWidth( '90px' ) );
 	fogDensityRow.add( fogDensity );
 
-	container.add( fogDensityRow );
+	container.add( fogDensityRow );*/
 
 	//
 
-	var refreshUI = function () {
+	refreshUI = function () {
 
 		var camera = editor.camera;
 		var scene = editor.scene;
 
 		var options = [];
 
-		options.push( { static: true, value: camera.id, html: '<span class="type ' + camera.type + '"></span> ' + camera.name } );
-		options.push( { static: true, value: scene.id, html: '<span class="type ' + scene.type + '"></span> ' + scene.name + getScript( scene.uuid ) } );
+		//options.push( { static: true, value: camera.id, html: '<span class="type ' + camera.type + '"></span> ' + camera.name } );
+		//options.push( { static: true, value: scene.id, html: '<span class="type ' + scene.type + '"></span> ' + scene.name + getScript( scene.uuid ) } );
 
 		function getScript( uuid ) {
 
@@ -148,27 +148,41 @@ Sidebar.Scene = function ( editor ) {
 
 				var object = objects[ i ];
 
-				var html = pad + '<span class="type ' + object.type + '"></span> ' + object.name;
+				if(object.type!='Line'){
 
-				if ( object instanceof THREE.Mesh ) {
+					var html = pad + '<span class="type ' + object.type + '"></span> ' + object.name;
 
-					var geometry = object.geometry;
-					var material = object.material;
+					/*if ( object instanceof THREE.Mesh ) {
 
-					html += ' <span class="type ' + geometry.type + '"></span> ' + geometry.name;
-					html += ' <span class="type ' + material.type + '"></span> ' + material.name;
+						var geometry = object.geometry;
+						var material = object.material;
 
+						html += ' <span class="type ' + geometry.type + '"></span> ' + geometry.name;
+						html += ' <span class="type ' + material.type + '"></span> ' + material.name;
+
+					}*/
+
+					html += getScript( object.uuid );
+
+					options.push( { value: object.id, html: html } );
+					if(editor.selected !== null){
+						if(object == editor.selected)
+							addObjects( object.children, pad + '&nbsp;&nbsp;&nbsp;' );
+						else {
+							if(object == editor.selected.parent) {
+								addObjects( object.children, pad + '&nbsp;&nbsp;&nbsp;' );
+							}
+							else {
+								if(object == editor.selected.parent.parent) {
+									addObjects( object.children, pad + '&nbsp;&nbsp;&nbsp;' );
+								}
+							}
+						}
+					}	
 				}
-
-				html += getScript( object.uuid );
-
-				options.push( { value: object.id, html: html } );
-
-				addObjects( object.children, pad + '&nbsp;&nbsp;&nbsp;' );
-
 			}
 
-		} )( scene.children, '&nbsp;&nbsp;&nbsp;' );
+		} )( scene.children, '' );
 
 		outliner.setOptions( options );
 
@@ -176,9 +190,10 @@ Sidebar.Scene = function ( editor ) {
 
 			outliner.setValue( editor.selected.id );
 
+
 		}
 
-		if ( scene.fog ) {
+		/*if ( scene.fog ) {
 
 			fogColor.setHexValue( scene.fog.color.getHex() );
 
@@ -201,11 +216,11 @@ Sidebar.Scene = function ( editor ) {
 
 		}
 
-		refreshFogUI();
+		refreshFogUI();*/
 
 	};
 
-	var refreshFogUI = function () {
+	/*var refreshFogUI = function () {
 
 		var type = fogType.getValue();
 
@@ -214,7 +229,7 @@ Sidebar.Scene = function ( editor ) {
 		fogFarRow.setDisplay( type === 'Fog' ? '' : 'none' );
 		fogDensityRow.setDisplay( type === 'FogExp2' ? '' : 'none' );
 
-	};
+	};*/
 
 	refreshUI();
 
@@ -223,10 +238,17 @@ Sidebar.Scene = function ( editor ) {
 	signals.sceneGraphChanged.add( refreshUI );
 
 	signals.objectSelected.add( function ( object ) {
-
+		if(object !== null) {
+			if((typeof Information[object.name] == 'undefined')&&(typeof StateInformation[object.name] == 'undefined')) {
+				refreshUI();
+			}
+		}
+		
+		
 		if ( ignoreObjectSelectedSignal === true ) return;
 
 		outliner.setValue( object !== null ? object.id : null );
+
 
 	} );
 

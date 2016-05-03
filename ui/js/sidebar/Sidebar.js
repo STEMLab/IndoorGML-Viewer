@@ -15,7 +15,8 @@ var Sidebar = function ( editor ) {
 
 	var tabs = new UI.Div();
 	tabs.setId( 'tabs' );
-	tabs.add( sceneTab, projectTab, settingsTab );
+	//tabs.add( sceneTab, projectTab, settingsTab );
+	tabs.add( sceneTab );
 	container.add( tabs );
 
 	function onClick( event ) {
@@ -24,26 +25,26 @@ var Sidebar = function ( editor ) {
 
 	}
 
-	//
+	
 
 	var scene = new UI.Span().add(
 		new Sidebar.Scene( editor ),
 		new Sidebar.Properties( editor ),
-		new Sidebar.Animation( editor ),
-		new Sidebar.Script( editor )
+		new Sidebar.Animation( editor )//,
+		//new Sidebar.Script( editor )
 	);
 	container.add( scene );
 
 	var project = new UI.Span().add(
 		new Sidebar.Project( editor )
 	);
-	container.add( project );
+	//container.add( project );
 
 	var settings = new UI.Span().add(
 		new Sidebar.Settings( editor ),
 		new Sidebar.History( editor )
 	);
-	container.add( settings );
+	//container.add( settings );
 
 	//
 
