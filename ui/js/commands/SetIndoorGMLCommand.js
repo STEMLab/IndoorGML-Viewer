@@ -206,7 +206,7 @@ SetIndoorGMLCommand.prototype = {
       MultiLayeredGraph.add(spaceLayers);
     }
     group.add(MultiLayeredGraph);
-    console.log(group);
+    //console.log(group);
 
 		return group;
 	},

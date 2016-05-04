@@ -232,10 +232,26 @@ Sidebar.Scene = function ( editor ) {
 	signals.sceneGraphChanged.add( refreshUI );
 
 	signals.objectSelected.add( function ( object ) {
+		console.log("signals.objectSelected.add");
 		if(object !== null) {
+			if(typeof AllGeometry[object.name] != 'undefined') {
+				for(var k in AllGeometry){
+                    for(var i=0;i<AllGeometry[k].length;i++){
+                       
+                        AllGeometry[k][i].visible=false;
+                    }
+                }
+                for(var i=0;i<AllGeometry[object.name].length;i++){
+                    //console.log(allgeometry[key][i]);
+                    AllGeometry[object.name][i].visible=true;
+                }
+             	
+			}
 			if((typeof Information[object.name] == 'undefined')&&(typeof StateInformation[object.name] == 'undefined')) {
+				console.log("refreshui in signals.objectSelected.add");
 				refreshUI();
 			}
+
 		}
 
 

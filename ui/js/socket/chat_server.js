@@ -11,6 +11,7 @@ exports.listen = function(server) {
 };
 function parsing(socket){
   socket.once('content', function (content) {
+    console.log("recieve file & start parsing!!");
     var Jsonix = require('jsonix').Jsonix;
     var XLink_1_0 = require('w3c-schemas').XLink_1_0;
     var GML_3_2_1 = require('ogc-schemas').GML_3_2_1;
@@ -31,6 +32,7 @@ function parsing(socket){
     var unmarshaller = context.createUnmarshaller();
     data = unmarshaller.unmarshalString(content);
     //console.log(data);
+    console.log("parsing finished!!");
     socket.emit('parse', data);
   });
 }

@@ -181,10 +181,18 @@ var Graph = function(){
     this.graphid=graphindex;
     graphindex++;
   }
-  this.graphname=jsoncontent.name;
-  if(typeof this.graphname == 'undefined'){
+  var name=jsoncontent.name;
+  if(typeof name !== 'undefined') {
+    this.graphname=name[0].value
+    if(typeof this.graphname == 'undefined'){
+      this.graphname=this.graphid;
+      
+    }
+  }
+  else {
     this.graphname=this.graphid;
   }
+  
 
   var states=jsoncontent.nodes[0].stateMember;
   if(typeof states !== 'undefined'){
@@ -238,12 +246,15 @@ var InterLayerConnection=function(){
   }
 
 
-  var layers=jsoncontent.value.multiLayeredGraph.spaceLayers;
+  var layers=jsoncontent.value.multiLayeredGraph.spaceLayers[0].spaceLayerMember;
+  //layers[0].space
+  //console.log(jsoncontent);
   if(typeof layers !== 'undefined'){
     for(var i=0;i<layers.length;i++){
       var g=new Graph();
-      maxmin_xyz=g.init(layers[i].spaceLayerMember[0].spaceLayer,maxmin_xyz);
+      maxmin_xyz=g.init(layers[i].spaceLayer,maxmin_xyz);
       this.multiLayeredGraph.push(g);
+      
     }
   }
   return maxmin_xyz;
