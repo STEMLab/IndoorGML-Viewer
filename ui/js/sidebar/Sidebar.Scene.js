@@ -144,11 +144,12 @@ Sidebar.Scene = function ( editor ) {
 
 		( function addObjects( objects, pad ) {
 
-			for ( var i = 0, l = objects.length; i < l; i ++ ) {
+			var objectLength = objects.length;
+			for ( var i = 0; i < objectLength; i++ ) {
 
 				var object = objects[ i ];
 
-				if(object.type!='Line'){
+				if (object.type != 'Line') {
 
 					var html = pad + '<span class="type ' + object.type + '"></span> ' + object.name;
 
@@ -166,19 +167,15 @@ Sidebar.Scene = function ( editor ) {
 
 					options.push( { value: object.id, html: html } );
 					if(editor.selected !== null){
-						if(object == editor.selected)
-							addObjects( object.children, pad + '&nbsp;&nbsp;&nbsp;' );
-						else {
-							if(object == editor.selected.parent) {
-								addObjects( object.children, pad + '&nbsp;&nbsp;&nbsp;' );
+						var selected = editor.selected;
+
+						while(selected) {
+							if(object == selected) {
+									addObjects( selected.children, pad + '&nbsp;&nbsp;&nbsp;' );
 							}
-							else {
-								if(object == editor.selected.parent.parent) {
-									addObjects( object.children, pad + '&nbsp;&nbsp;&nbsp;' );
-								}
-							}
+							selected = selected.parent;
 						}
-					}	
+					}
 				}
 			}
 
@@ -187,10 +184,7 @@ Sidebar.Scene = function ( editor ) {
 		outliner.setOptions( options );
 
 		if ( editor.selected !== null ) {
-
 			outliner.setValue( editor.selected.id );
-
-
 		}
 
 		/*if ( scene.fog ) {
@@ -243,8 +237,8 @@ Sidebar.Scene = function ( editor ) {
 				refreshUI();
 			}
 		}
-		
-		
+
+
 		if ( ignoreObjectSelectedSignal === true ) return;
 
 		outliner.setValue( object !== null ? object.id : null );
