@@ -50,8 +50,8 @@ Sidebar.Object = function ( editor ) {
 		this.setValue( 'Actions' );
 
 	} );
-	// container.addStatic( objectActions );
-
+	 //container.addStatic( objectActions );
+	container.add( objectActions );
 	// type
 
 	var objectTypeRow = new UI.Row();
@@ -602,7 +602,7 @@ Sidebar.Object = function ( editor ) {
 	} );
 
 	function updateUI( object ) {
-
+		console.log("update ui");
 		if(typeof Information[object.name] != 'undefined') {
 			property1.setValue( 'ID' );
 			property2.setValue( 'Name' );
@@ -629,21 +629,11 @@ Sidebar.Object = function ( editor ) {
 			objectName.setValue( StateInformation[object.name].duality );
 		}
 		else {
-			if(typeof AllGeometry[object.name] != 'undefined') {
-				for(var k in AllGeometry){
-                    for(var i=0;i<AllGeometry[k].length;i++){
-                       
-                        AllGeometry[k][i].visible=false;
-                    }
-                }
-                for(var i=0;i<AllGeometry[object.name].length;i++){
-                    //console.log(allgeometry[key][i]);
-                    AllGeometry[object.name][i].visible=true;
-                }
-			}
+			
 			objectType.setValue( '' );
 			objectUUID.setValue( '' );
 			objectName.setValue( '' );
+
 		}
 
 

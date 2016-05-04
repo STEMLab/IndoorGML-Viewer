@@ -35,13 +35,15 @@ var Loader = function ( editor ) {
 
 					socket.once('parse', function(result) {
 
-
+							console.log("receive json!!");
 							var indoor = new Indoor();
 							var maxmin_xyz=indoor.init(result);
+							console.log("init indoorfeature!!");
 							var ic = new SetIndoorGMLCommand();
 							ic.makeGeometry(indoor,maxmin_xyz);
+							console.log("move center & triangulation!!");
 							var object = ic.createObject(indoor);
-
+							console.log("create mesh!!");
 
 							editor.execute( new AddObjectCommand( object ) );
 
@@ -53,8 +55,8 @@ var Loader = function ( editor ) {
 							editor.execute( new AddObjectCommand( mesh ) );
 							*/
 					});
-
-          socket.emit('content', contents);
+					console.log("send file to server!!");
+          			socket.emit('content', contents);
 					//editor.execute( new SetSceneCommand( result ) );
 
 				}, false );
