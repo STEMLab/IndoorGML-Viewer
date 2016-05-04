@@ -120,6 +120,51 @@ Sidebar.Scene = function ( editor ) {
 
 	//
 
+	getScript = function( uuid ) {
+			if ( editor.scripts[ uuid ] !== undefined ) {
+				return ' <span class="type Script"></span>';
+			}
+			return '';
+	}
+
+	addObjects = function( objects, pad, options ) {
+
+		var objectLength = objects.length;
+		for ( var i = 0; i < objectLength; i++ ) {
+
+			var object = objects[ i ];
+
+			if (object.type != 'Line') {
+
+				var html = pad + '<span class="type ' + object.type + '"></span> ' + object.name;
+
+				/*if ( object instanceof THREE.Mesh ) {
+
+					var geometry = object.geometry;
+					var material = object.material;
+
+					html += ' <span class="type ' + geometry.type + '"></span> ' + geometry.name;
+					html += ' <span class="type ' + material.type + '"></span> ' + material.name;
+
+				}*/
+
+				html += this.getScript( object.uuid );
+
+				options.push( { value: object.id, html: html } );
+				if(editor.selected !== null){
+					var selected = editor.selected;
+
+					while(selected) {
+						if(object == selected) {
+								this.addObjects( selected.children, pad + '&nbsp;&nbsp;&nbsp;', options);
+						}
+						selected = selected.parent;
+					}
+				}
+			}
+		}
+	}
+
 	refreshUI = function () {
 
 		var camera = editor.camera;
@@ -130,56 +175,7 @@ Sidebar.Scene = function ( editor ) {
 		//options.push( { static: true, value: camera.id, html: '<span class="type ' + camera.type + '"></span> ' + camera.name } );
 		//options.push( { static: true, value: scene.id, html: '<span class="type ' + scene.type + '"></span> ' + scene.name + getScript( scene.uuid ) } );
 
-		function getScript( uuid ) {
-
-			if ( editor.scripts[ uuid ] !== undefined ) {
-
-				return ' <span class="type Script"></span>';
-
-			}
-
-			return '';
-
-		}
-
-		( function addObjects( objects, pad ) {
-
-			var objectLength = objects.length;
-			for ( var i = 0; i < objectLength; i++ ) {
-
-				var object = objects[ i ];
-
-				if (object.type != 'Line') {
-
-					var html = pad + '<span class="type ' + object.type + '"></span> ' + object.name;
-
-					/*if ( object instanceof THREE.Mesh ) {
-
-						var geometry = object.geometry;
-						var material = object.material;
-
-						html += ' <span class="type ' + geometry.type + '"></span> ' + geometry.name;
-						html += ' <span class="type ' + material.type + '"></span> ' + material.name;
-
-					}*/
-
-					html += getScript( object.uuid );
-
-					options.push( { value: object.id, html: html } );
-					if(editor.selected !== null){
-						var selected = editor.selected;
-
-						while(selected) {
-							if(object == selected) {
-									addObjects( selected.children, pad + '&nbsp;&nbsp;&nbsp;' );
-							}
-							selected = selected.parent;
-						}
-					}
-				}
-			}
-
-		} )( scene.children, '' );
+		this.addObjects( scene.children, '', options );
 
 		outliner.setOptions( options );
 
@@ -237,7 +233,7 @@ Sidebar.Scene = function ( editor ) {
 			if(typeof AllGeometry[object.name] != 'undefined') {
 				for(var k in AllGeometry){
                     for(var i=0;i<AllGeometry[k].length;i++){
-                       
+
                         AllGeometry[k][i].visible=false;
                     }
                 }
@@ -245,7 +241,7 @@ Sidebar.Scene = function ( editor ) {
                     //console.log(allgeometry[key][i]);
                     AllGeometry[object.name][i].visible=true;
                 }
-             	
+
 			}
 			if((typeof Information[object.name] == 'undefined')&&(typeof StateInformation[object.name] == 'undefined')) {
 				console.log("refreshui in signals.objectSelected.add");
