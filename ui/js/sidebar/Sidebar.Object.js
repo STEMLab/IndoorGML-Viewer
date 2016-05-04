@@ -13,45 +13,7 @@ Sidebar.Object = function ( editor ) {
 
 	// Actions
 
-	var objectActions = new UI.Select().setPosition( 'absolute' ).setRight( '8px' ).setFontSize( '11px' );
-	objectActions.setOptions( {
-
-		'Actions': 'Actions',
-		'Reset Position': 'Reset Position',
-		'Reset Rotation': 'Reset Rotation',
-		'Reset Scale': 'Reset Scale'
-
-	} );
-	objectActions.onClick( function ( event ) {
-
-		event.stopPropagation(); // Avoid panel collapsing
-
-	} );
-	objectActions.onChange( function ( event ) {
-
-		var object = editor.selected;
-
-		switch ( this.getValue() ) {
-
-			case 'Reset Position':
-				editor.execute( new SetPositionCommand( object, new THREE.Vector3( 0, 0, 0 ) ) );
-				break;
-
-			case 'Reset Rotation':
-				editor.execute( new SetRotationCommand( object, new THREE.Euler( 0, 0, 0 ) ) );
-				break;
-
-			case 'Reset Scale':
-				editor.execute( new SetScaleCommand( object, new THREE.Vector3( 1, 1, 1 ) ) );
-				break;
-
-		}
-
-		this.setValue( 'Actions' );
-
-	} );
-	 //container.addStatic( objectActions );
-	container.add( objectActions );
+	
 	// type
 
 	var objectTypeRow = new UI.Row();
@@ -95,6 +57,45 @@ Sidebar.Object = function ( editor ) {
 
 	container.add( objectNameRow );
 
+	var objectActions = new UI.Select().setPosition( 'absolute' ).setRight( '8px' ).setFontSize( '11px' );
+	objectActions.setOptions( {
+
+		'Actions': 'Actions',
+		'Reset Position': 'Reset Position',
+		'Reset Rotation': 'Reset Rotation',
+		'Reset Scale': 'Reset Scale'
+
+	} );
+	objectActions.onClick( function ( event ) {
+
+		event.stopPropagation(); // Avoid panel collapsing
+
+	} );
+	objectActions.onChange( function ( event ) {
+
+		var object = editor.selected;
+
+		switch ( this.getValue() ) {
+
+			case 'Reset Position':
+				editor.execute( new SetPositionCommand( object, new THREE.Vector3( 0, 0, 0 ) ) );
+				break;
+
+			case 'Reset Rotation':
+				editor.execute( new SetRotationCommand( object, new THREE.Euler( 0, 0, 0 ) ) );
+				break;
+
+			case 'Reset Scale':
+				editor.execute( new SetScaleCommand( object, new THREE.Vector3( 1, 1, 1 ) ) );
+				break;
+
+		}
+
+		this.setValue( 'Actions' );
+
+	} );
+	 //container.addStatic( objectActions );
+	container.add( objectActions );
 	/*
 	// parent
 
