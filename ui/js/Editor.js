@@ -341,7 +341,10 @@ Editor.prototype = {
 
 	select: function ( object ) {
 
-		if ( this.selected === object ) return;
+		/*
+		** changed by @hgryoo
+		*/
+		//if ( this.selected === object ) return;
 
 		var uuid = null;
 

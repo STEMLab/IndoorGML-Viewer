@@ -12,6 +12,7 @@ Sidebar.Scene = function ( editor ) {
 
 	var ignoreObjectSelectedSignal = false;
 
+	/* outliner settings */
 	var outliner = new UI.Outliner( editor );
 	outliner.setId( 'outliner' );
 	outliner.onChange( function () {
@@ -31,6 +32,7 @@ Sidebar.Scene = function ( editor ) {
 	container.add( outliner );
 	container.add( new UI.Break() );
 
+	var expandList = [];
 	// fog
 
 	/*var updateFogParameters = function () {
@@ -151,16 +153,37 @@ Sidebar.Scene = function ( editor ) {
 				html += this.getScript( object.uuid );
 
 				options.push( { value: object.id, html: html } );
-				if(editor.selected !== null){
-					var selected = editor.selected;
 
-					while(selected) {
-						if(object == selected) {
-								this.addObjects( selected.children, pad + '&nbsp;&nbsp;&nbsp;', options);
+				if(editor.selected !== null) {
+					if(object == editor.selected) {
+						var index = expandList.indexOf(object);
+						if(index == -1) {
+							expandList.push(object);
+						} else {
+							expandList.splice(index, 1);
 						}
-						selected = selected.parent;
 					}
 				}
+
+				var index = expandList.indexOf(object);
+				if(index != -1) {
+					var expand = expandList[index];
+					while(expand) {
+						if(object == expand) {
+							this.addObjects( expand.children, pad + '&nbsp;&nbsp;&nbsp;', options);
+						}
+						expand = expand.parent;
+					}
+				}
+				/*
+				var selected = editor.selected;
+				while(selected) {
+					if(object == selected) {
+							this.addObjects( selected.children, pad + '&nbsp;&nbsp;&nbsp;', options);
+					}
+					selected = selected.parent;
+				}
+				*/
 			}
 		}
 	}
@@ -229,6 +252,7 @@ Sidebar.Scene = function ( editor ) {
 
 	signals.objectSelected.add( function ( object ) {
 		console.log("signals.objectSelected.add");
+
 		if(object !== null) {
 			if(typeof AllGeometry[object.name] != 'undefined') {
 				for(var k in AllGeometry){
@@ -249,7 +273,6 @@ Sidebar.Scene = function ( editor ) {
 			}
 
 		}
-
 
 		if ( ignoreObjectSelectedSignal === true ) return;
 
