@@ -4,6 +4,8 @@
 
 Menubar.Settings = function ( editor ) {
 
+	var signals = editor.signals;
+
 	var container = new UI.Panel();
 	container.setClass( 'menu' );
 
@@ -17,22 +19,29 @@ Menubar.Settings = function ( editor ) {
 	container.add( options );
 
 	// New
+	var gridChecked = true;
 
-	var option = new UI.Row();
-	option.setClass( 'option' );
-	option.setTextContent( 'Style' );
-	option.onClick( function () {
+	var gridrow = new UI.Row();
+	gridrow.setClass( 'option' );
+	gridrow.setTextContent( 'Grid Off' );
 
-		if ( confirm( 'Style change test' ) ) {
-		}
+			gridrow.onClick( function () {
+				if (gridChecked == true) {
+					gridrow.setTextContent( 'Grid Off' );
+					gridChecked = false;
+				} else {
+					gridrow.setTextContent( 'Grid On' );
+					gridChecked = true;
+				}
+				signals.showGridChanged.dispatch( gridChecked );
+			} );
 
-	} );
-	options.add( option );
+	options.add( gridrow );
 
 	//
 
 	options.add( new UI.HorizontalRule() );
-  
+
 	return container;
 
 };
