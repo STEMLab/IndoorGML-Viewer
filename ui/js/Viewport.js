@@ -39,6 +39,7 @@ var Viewport = function ( editor ) {
 	var objectRotationOnDown = null;
 	var objectScaleOnDown = null;
 
+  /*
 	var transformControls = new THREE.TransformControls( camera, container.dom );
 	transformControls.addEventListener( 'change', function () {
 
@@ -119,7 +120,7 @@ var Viewport = function ( editor ) {
 	} );
 
 	sceneHelpers.add( transformControls );
-
+  */
 	// fog
 
 	var oldFogType = "None";
@@ -263,7 +264,7 @@ var Viewport = function ( editor ) {
 	var controls = new THREE.EditorControls( camera, container.dom );
 	controls.addEventListener( 'change', function () {
 
-		transformControls.update();
+		//transformControls.update();
 		signals.cameraChanged.dispatch( camera );
 
 	} );
@@ -302,19 +303,19 @@ var Viewport = function ( editor ) {
 
 	signals.transformModeChanged.add( function ( mode ) {
 
-		transformControls.setMode( mode );
+		//transformControls.setMode( mode );
 
 	} );
 
 	signals.snapChanged.add( function ( dist ) {
 
-		transformControls.setTranslationSnap( dist );
+		//transformControls.setTranslationSnap( dist );
 
 	} );
 
 	signals.spaceChanged.add( function ( space ) {
 
-		transformControls.setSpace( space );
+		//transformControls.setSpace( space );
 
 	} );
 
@@ -357,7 +358,7 @@ var Viewport = function ( editor ) {
 	signals.objectSelected.add( function ( object ) {
 
 		selectionBox.visible = false;
-		transformControls.detach();
+		//transformControls.detach();
 
 		if ( object !== null ) {
 
@@ -369,7 +370,7 @@ var Viewport = function ( editor ) {
 
 			}
 
-			transformControls.attach( object );
+			//transformControls.attach( object );
 
 		}
 
@@ -410,7 +411,7 @@ var Viewport = function ( editor ) {
 		if ( editor.selected === object ) {
 
 			selectionBox.update( object );
-			transformControls.update();
+			//transformControls.update();
 
 		}
 
