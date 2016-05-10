@@ -19,12 +19,10 @@ Menubar.Settings = function ( editor ) {
 	container.add( options );
 
 	// New
-	var gridChecked = true;
-
+	var gridChecked = false;
 	var gridrow = new UI.Row();
 	gridrow.setClass( 'option' );
-	gridrow.setTextContent( 'Grid Off' );
-
+	gridrow.setTextContent( 'Grid On' );
 			gridrow.onClick( function () {
 				if (gridChecked == true) {
 					gridrow.setTextContent( 'Grid Off' );

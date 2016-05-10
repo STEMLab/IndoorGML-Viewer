@@ -85,6 +85,10 @@ var Editor = function () {
 	this.scene = new THREE.Scene();
 	this.scene.name = 'Scene';
 
+	/* Axis Helper */
+	this.axisHelper = new THREE.AxisHelper(10);
+	this.scene.add( this.axisHelper );
+
 	this.sceneHelpers = new THREE.Scene();
 
 	this.object = {};
