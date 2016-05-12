@@ -1,3 +1,0 @@
-<test:foo a="a" b="b" xmlns:test="urn:test" xmlns="urn:test">
-	<bar>goo<![CDATA[>]]></bar>
-</test:foo>

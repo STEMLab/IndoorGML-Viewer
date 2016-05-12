@@ -1,8 +1,0 @@
-{
-	"name" : { "localPart" : "value", "namespaceURI" : "", "prefix" : "", "key" : "value", "string" : "value" },
-	"value" : {
-		"value" : "test",
-		"attribute" : "check",
-		"TYPE_NAME" : "Zero.ValueType"
-	}
-}

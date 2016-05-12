@@ -1,7 +1,0 @@
-{
-	"name" : { "localPart" : "element", "namespaceURI" : "", "prefix" : "", "key" : "element", "string" : "element" },
-	"value" : {
-		"element" : "one",
-		"TYPE_NAME" : "Zero.ElementType"
-	}
-}

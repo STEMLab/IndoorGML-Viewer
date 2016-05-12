@@ -1,9 +1,0 @@
-{
-	"name" : { "localPart" : "extended", "namespaceURI" : "", "prefix" : "", "key" : "extended", "string" : "extended" },
-	"value" : {
-		"alpha" : "one",
-		"beta" : [ 2 ],
-		"gamma" : "urn:three",
-		"TYPE_NAME" : "Zero.ExtendedType"
-	}
-}

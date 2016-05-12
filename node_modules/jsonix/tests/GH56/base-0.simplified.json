@@ -1,7 +1,0 @@
-{
-	"base" : {
-		"alpha" : "one",
-		"beta" : [ 2 ],
-		"TYPE_NAME" : "Zero.BaseType"
-	}
-}

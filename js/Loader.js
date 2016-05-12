@@ -28,11 +28,32 @@ var Loader = function ( editor ) {
 
 			case 'gml': {
 
-				var socket = io.connect();
+				//var socket = io.connect();
 				reader.addEventListener( 'load', function ( event ) {
 
 					var contents = event.target.result;
 
+					var indoorgmlLoader = new IndoorGMLLoader();
+
+					var data = indoorgmlLoader.unmarshal(contents);
+
+					console.log("receive json!!");
+
+					var indoor = new Indoor();
+					var maxmin_xyz = indoor.init(data);
+
+					console.log("init indoorfeature!!");
+
+					var ic = new SetIndoorGMLCommand();
+					ic.makeGeometry(indoor,maxmin_xyz);
+
+					console.log("move center & triangulation!!");
+					var object = ic.createObject(indoor);
+					console.log("create mesh!!");
+
+					editor.execute( new AddObjectCommand( object ) );
+
+					/*
 					socket.once('parse', function(result) {
 
 							console.log("receive json!!");
@@ -47,16 +68,17 @@ var Loader = function ( editor ) {
 
 							editor.execute( new AddObjectCommand( object ) );
 
-							/*
-							var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-							var mesh = new THREE.Mesh( geometry, new THREE.MeshStandardMaterial() );
-							mesh.name = 'Box ';
 
-							editor.execute( new AddObjectCommand( mesh ) );
-							*/
+							//var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+							//var mesh = new THREE.Mesh( geometry, new THREE.MeshStandardMaterial() );
+							//mesh.name = 'Box ';
+
+							//editor.execute( new AddObjectCommand( mesh ) );
+
 					});
 					console.log("send file to server!!");
-          			socket.emit('content', contents);
+          socket.emit('content', contents);
+					*/
 					//editor.execute( new SetSceneCommand( result ) );
 
 				}, false );
@@ -73,6 +95,35 @@ var Loader = function ( editor ) {
 		}
 
 	};
+
+	function parsing(content) {
+
+    //var roundtripsWithContext = require('roundtrip').roundtripsWithContext;
+    var text;
+    var mappings = [XLink_1_0, GML_3_2_1, IndoorGML_Core_1_0, IndoorGML_Navigation_1_0];
+
+    var context = getContext(mappings, {
+      namespacePrefixes : {
+        'http://www.opengis.net/gml/3.2' : 'gml',
+        'http://www.w3.org/1999/xlink' : 'xlink',
+        'http://www.opengis.net/indoorgml/1.0/core' : ''
+      }
+    });
+
+/*
+		new Jsonix.Context(mappings, {
+      namespacePrefixes : {
+        'http://www.opengis.net/gml/3.2' : 'gml',
+        'http://www.w3.org/1999/xlink' : 'xlink',
+        'http://www.opengis.net/indoorgml/1.0/core' : ''
+      }
+    });
+		*/
+    var unmarshaller = context.createUnmarshaller();
+    data = unmarshaller.unmarshalString(content);
+
+		return data;
+	}
 
 	function handleJSON( data, file, filename ) {
 

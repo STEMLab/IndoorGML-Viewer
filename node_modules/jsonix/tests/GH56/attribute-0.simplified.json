@@ -1,8 +1,0 @@
-{
-	"attribute" : {
-		"value" : "test",
-		"string" : "zero",
-		"integers" : [ 1, 2 ],
-		"TYPE_NAME" : "Zero.AttributeType"
-	}
-}
