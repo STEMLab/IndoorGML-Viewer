@@ -97,26 +97,12 @@ SetIndoorGMLCommand.prototype = {
     group.name='IndoorFeatures';
     var primalSpaceFeatures = new THREE.Object3D;
     primalSpaceFeatures.name='primalSpaceFeatures';
-		//Add mesh for surfaces of CellSpace
-		for (var key in CellDictionary) {
-        /*var surfaces = CellDictionary[key];
-        var cell = [];
-        for(var j = 0; j < surfaces.length; j++){
-            var geometry = new THREE.BufferGeometry();
-            var surface = surfaces[j];
-            var vertices = new Float32Array( surface );
 
-
-            geometry.addAttribute('position', new THREE.BufferAttribute( vertices, 3 ) );
-						var material = new THREE.MeshStandardMaterial( { color: 0xffff00, opacity:0.3, transparent : true, side: THREE.DoubleSide} );
-						var mesh = new THREE.Mesh( geometry, material );
-
-						mesh.name = 'Mesh ' + (key) + (j);
-
-            group.add( mesh );
-            cell.push(mesh);
-        }
-        AllGeometry[key] = cell;*/
+		var cells = indoor.primalSpaceFeature;
+    for(var i = 0; i < cells.length; i++){        
+        var key = cells[i].cellid;
+        var cellgroup = new THREE.Object3D;
+        cellgroup.name = key;
         var cell = CellDictionary[key];
 
 
@@ -128,18 +114,8 @@ SetIndoorGMLCommand.prototype = {
         var material = new THREE.MeshStandardMaterial( { color: 0xffff00, opacity:0.3, transparent : true, side: THREE.DoubleSide} );
         var mesh = new THREE.Mesh( geometry, material );
 
-        mesh.name = (key);
+        cellgroup.add(mesh);
 
-        primalSpaceFeatures.add( mesh );
-        
-        //AllGeometry[key] = [mesh];
-
-    }
-    
-
-		//Add line for surfaces of CellSpace
-		var cells = indoor.primalSpaceFeature;
-    for(var i = 0; i < cells.length; i++){
         var surfaces = cells[i].geometry;
         for(var j = 0; j < surfaces.length; j++){
             var polygon = surfaces[j].exterior;
@@ -151,8 +127,7 @@ SetIndoorGMLCommand.prototype = {
             }
 
             var line = new THREE.Line( geometry, material );
-            primalSpaceFeatures.add( line );
-            //AllGeometry[ cells[i].cellid ].push(line);
+            cellgroup.add(line);
             polygon = surfaces[j].interior;
             if(polygon.length != 0){
                 geometry = new THREE.Geometry();
@@ -160,12 +135,10 @@ SetIndoorGMLCommand.prototype = {
                     geometry.vertices.push(new THREE.Vector3( polygon[k], polygon[k + 1], polygon[k + 2]));
                 }
                 var line = new THREE.Line( geometry, material );
-                //console.log(polygon);
-                primalSpaceFeatures.add( line );
-                //AllGeometry[ cells[i].cellid ].push(line);
+                cellgroup.add(line);
             }
         }
-
+        primalSpaceFeatures.add(cellgroup);
         Information[cells[i].cellid]=cells[i];
     }
     group.add(primalSpaceFeatures);
@@ -178,18 +151,27 @@ SetIndoorGMLCommand.prototype = {
     for(var key in NetworkDictionary){
       var spaceLayers = new THREE.Object3D;
       spaceLayers.name = key;
-      var g=[];
+      //var g=[];
       var nodes=NetworkDictionary[key][0];
+      var node = new THREE.Object3D;
+      node.name = "nodes";
       for(var i in nodes){
           var mesh = new THREE.Mesh( geometry, material );
           mesh.position.x=nodes[i][0];
           mesh.position.y=nodes[i][1];
           mesh.position.z=nodes[i][2];
-          mesh.name = i;
-          spaceLayers.add(mesh);
-          g.push(mesh);
+          var stategroup = new THREE.Object3D;
+          stategroup.name = i;
+          stategroup.add(mesh);
+          //mesh.name = i;
+          node.add(stategroup);
+          //spaceLayers.add(mesh);
+          //g.push(mesh);
       }
+      spaceLayers.add(node);
       var edges=NetworkDictionary[key][1];
+      var edge = new THREE.Object3D;
+      edge.name = "edges";
       var material = new THREE.LineBasicMaterial({color: 0x00ffff,linewidth:10});
 
       for(var i in edges){
@@ -198,11 +180,16 @@ SetIndoorGMLCommand.prototype = {
               geometry.vertices.push(new THREE.Vector3( edges[i][k], edges[i][k+1], edges[i][k+2]));
           }
           var line = new THREE.Line( geometry, material );
-          line.name = i;
-          spaceLayers.add(line);
-          g.push(line);
+          //line.name = i;
+          //spaceLayers.add(line);
+          var edgegroup = new THREE.Object3D;
+          edgegroup.name = i;
+          edgegroup.add(line);
+          edge.add(edgegroup);
+          //g.push(line);
       }
-      AllGeometry[key]=g;
+      spaceLayers.add(edge);
+      AllGeometry[key]=spaceLayers;
       MultiLayeredGraph.add(spaceLayers);
     }
     group.add(MultiLayeredGraph);

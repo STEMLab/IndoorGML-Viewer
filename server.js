@@ -40,9 +40,9 @@ var server = http.createServer(function(request, response) {
   var filePath = false;
 
   if (request.url == '/') {
-    filePath = 'ui/index.html';
+    filePath = 'index.html';
   } else {
-    filePath = 'ui' + request.url;
+    filePath =  request.url;
   }
 
   var absPath = './' + filePath;
@@ -53,5 +53,5 @@ server.listen(3000, function() {
   console.log("Server listening on port 3000.");
 });
 
-var chatServer = require('./ui/js/socket/chat_server');
+var chatServer = require('./js/socket/chat_server');
 chatServer.listen(server);

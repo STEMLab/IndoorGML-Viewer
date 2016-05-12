@@ -57,7 +57,8 @@ Sidebar.Object = function ( editor ) {
 
 	container.add( objectNameRow );
 
-	var objectActions = new UI.Select().setPosition( 'absolute' ).setRight( '8px' ).setFontSize( '11px' );
+	
+	/*var objectActions = new UI.Select().setPosition( 'absolute' ).setRight( '8px' ).setFontSize( '11px' );
 	objectActions.setOptions( {
 
 		'Actions': 'Actions',
@@ -93,9 +94,9 @@ Sidebar.Object = function ( editor ) {
 
 		this.setValue( 'Actions' );
 
-	} );
+	} );*/
 	 //container.addStatic( objectActions );
-	container.add( objectActions );
+	//container.add( objectActions );
 	/*
 	// parent
 
@@ -271,7 +272,7 @@ Sidebar.Object = function ( editor ) {
 	objectVisibleRow.add( new UI.Text( 'Visible' ).setWidth( '90px' ) );
 	objectVisibleRow.add( objectVisible );
 
-	//container.add( objectVisibleRow );
+	container.add( objectVisibleRow );
 
 	// user data
 
@@ -459,7 +460,7 @@ Sidebar.Object = function ( editor ) {
 			}
 
 			if ( object.visible !== objectVisible.getValue() ) {
-
+				console.log(objectVisible.parent());
 				editor.execute( new SetValueCommand( object, 'visible', objectVisible.getValue() ) );
 
 			}
@@ -604,8 +605,9 @@ Sidebar.Object = function ( editor ) {
 
 	function updateUI( object ) {
 		console.log("update ui");
+		
 		if(typeof Information[object.name] != 'undefined') {
-			property1.setValue( 'ID' );
+			//property1.setValue( 'ID' );
 			property2.setValue( 'Name' );
 			property3.setValue( 'Duality' );
 			objectType.setValue( Information[object.name].cellid );
@@ -614,7 +616,7 @@ Sidebar.Object = function ( editor ) {
 			objectName.setValue( Information[object.name].duality );
 		}
 		else if(typeof StateInformation[object.name] != 'undefined') {
-			property1.setValue( 'ID' );
+			//property1.setValue( 'ID' );
 			property2.setValue( 'Connects' );
 			property3.setValue( 'Duality' );
 			objectType.setValue( StateInformation[object.name].stateid );
@@ -628,6 +630,19 @@ Sidebar.Object = function ( editor ) {
 			}
 			objectUUID.setValue(constring);
 			objectName.setValue( StateInformation[object.name].duality );
+		}
+		else if(typeof TransitionInformation[object.name] != 'undefined') {
+			//property1.setValue( 'ID' );
+			property2.setValue( 'Connects' );
+			property3.setValue( 'Weight' );
+			objectType.setValue( TransitionInformation[object.name].transitionid );
+			var con = TransitionInformation[object.name].connects;
+			var constring="";
+			if(typeof con != 'undefined') {
+				constring=con[0] + " , " + con[1];
+			}
+			objectUUID.setValue(constring);
+			objectName.setValue( TransitionInformation[object.name].weight );
 		}
 		else {
 			
