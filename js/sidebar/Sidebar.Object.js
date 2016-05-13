@@ -13,7 +13,7 @@ Sidebar.Object = function ( editor ) {
 
 	// Actions
 
-	
+
 	// type
 
 	var objectTypeRow = new UI.Row();
@@ -57,7 +57,7 @@ Sidebar.Object = function ( editor ) {
 
 	container.add( objectNameRow );
 
-	
+
 	/*var objectActions = new UI.Select().setPosition( 'absolute' ).setRight( '8px' ).setFontSize( '11px' );
 	objectActions.setOptions( {
 
@@ -460,9 +460,7 @@ Sidebar.Object = function ( editor ) {
 			}
 
 			if ( object.visible !== objectVisible.getValue() ) {
-				console.log(objectVisible.parent());
 				editor.execute( new SetValueCommand( object, 'visible', objectVisible.getValue() ) );
-
 			}
 
 			if ( object.castShadow !== undefined && object.castShadow !== objectCastShadow.getValue() ) {
@@ -605,7 +603,7 @@ Sidebar.Object = function ( editor ) {
 
 	function updateUI( object ) {
 		console.log("update ui");
-		
+
 		if(typeof Information[object.name] != 'undefined') {
 			//property1.setValue( 'ID' );
 			property2.setValue( 'Name' );
@@ -645,7 +643,7 @@ Sidebar.Object = function ( editor ) {
 			objectName.setValue( TransitionInformation[object.name].weight );
 		}
 		else {
-			
+
 			objectType.setValue( '' );
 			objectUUID.setValue( '' );
 			objectName.setValue( '' );
