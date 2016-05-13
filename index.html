@@ -19,16 +19,8 @@
 		<!-- Browserified Library -->
 		<script src="js/loader/IndoorGMLLoader.js"></script>
 
-		<!--
-		<script src="js/browserify/ogc-schemas_browserify.js"></script>
-		<script src="js/browserify/w3c-schemas_browserify.js"></script>
-		-->
 
-    <!-- Import Node.js Library -->
-    <!-- <script src='/socket.io/socket.io.js' type='text/javascript'></script> -->
     <script src='js/libs/MV.js' type='text/javascript'></script>
-    <!-- Socket -->
-    <script src="js/socket/chat_server.js"></script>
 
     <!-- Model -->
 		<script src='js/model/Dictionary.js' type='text/javascript'></script>
@@ -155,6 +147,7 @@
 
 			editor.setTheme( editor.config.getKey( 'theme' ) );
 
+			/*
 			editor.storage.init( function () {
 
 				editor.storage.get( function ( state ) {
@@ -179,15 +172,13 @@
 
 				//
 
+
 				var timeout;
 
 				function saveState( scene ) {
-
 					if ( editor.config.getKey( 'autosave' ) === false ) {
-
 						return;
-
-					}
+				}
 
 					clearTimeout( timeout );
 
@@ -226,7 +217,7 @@
 				} );
 
 			} );
-
+			*/
 			//
 
 			document.addEventListener( 'dragover', function ( event ) {
@@ -267,21 +258,9 @@
 					case 90: // Register Ctrl-Z for Undo, Ctrl-Shift-Z for Redo
 
 						if ( event.ctrlKey && event.shiftKey ) {
-
 							editor.redo();
-
-
-
-
-
-
-
-
-
 						} else if ( event.ctrlKey ) {
-
 							editor.undo();
-
 						}
 						break;
 
@@ -289,18 +268,17 @@
 
 			}, false );
 
+			/* Windows Resize */
 			function onWindowResize( event ) {
-
 				editor.signals.windowResize.dispatch();
-
 			}
-
 			window.addEventListener( 'resize', onWindowResize, false );
 
 			onWindowResize();
 
 			//
 
+			/*
 			var isLoadingFromHash = false;
 			var hash = window.location.hash;
 
@@ -324,6 +302,7 @@
 				}
 
 			}
+			*/
 
 			/*
 			window.addEventListener( 'message', function ( event ) {
