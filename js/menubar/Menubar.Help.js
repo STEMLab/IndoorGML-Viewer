@@ -20,10 +20,10 @@ Menubar.Help = function ( editor ) {
 
 	var option = new UI.Row();
 	option.setClass( 'option' );
-	option.setTextContent( 'Source code' );
+	option.setTextContent( 'Visit repository' );
 	option.onClick( function () {
 
-		window.open( 'https://github.com/mrdoob/three.js/tree/master/editor', '_blank' )
+		window.open( 'https://github.com/STEMLab/IndoorGML-Viewer/tree/master', '_blank' )
 
 	} );
 	options.add( option );
@@ -35,7 +35,7 @@ Menubar.Help = function ( editor ) {
 	option.setTextContent( 'About' );
 	option.onClick( function () {
 
-		window.open( 'http://threejs.org', '_blank' );
+		window.open( '#', '_blank' );
 
 	} );
 	options.add( option );

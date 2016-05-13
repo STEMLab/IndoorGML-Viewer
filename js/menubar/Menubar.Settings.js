@@ -22,13 +22,13 @@ Menubar.Settings = function ( editor ) {
 	var gridChecked = false;
 	var gridrow = new UI.Row();
 	gridrow.setClass( 'option' );
-	gridrow.setTextContent( 'Grid On' );
+	gridrow.setTextContent( 'Grid on' );
 			gridrow.onClick( function () {
 				if (gridChecked == true) {
-					gridrow.setTextContent( 'Grid Off' );
+					gridrow.setTextContent( 'Grid off' );
 					gridChecked = false;
 				} else {
-					gridrow.setTextContent( 'Grid On' );
+					gridrow.setTextContent( 'Grid on' );
 					gridChecked = true;
 				}
 				signals.showGridChanged.dispatch( gridChecked );
