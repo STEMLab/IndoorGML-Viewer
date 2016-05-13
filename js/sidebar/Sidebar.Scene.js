@@ -205,7 +205,6 @@ Sidebar.Scene = function ( editor ) {
 		if ( editor.selected !== null ) {
 			outliner.setValue( editor.selected.id );
 		}
-
 		/*if ( scene.fog ) {
 
 			fogColor.setHexValue( scene.fog.color.getHex() );
