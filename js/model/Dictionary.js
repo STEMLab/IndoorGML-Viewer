@@ -5,3 +5,4 @@ var Information = {}; //cells
 var StateInformation = {}; //states
 var TransitionInformation = {}; //transtions
 var GraphInformation = {}; //graphs
+var tree;

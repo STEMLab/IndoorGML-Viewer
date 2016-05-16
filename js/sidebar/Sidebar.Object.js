@@ -460,7 +460,7 @@ Sidebar.Object = function ( editor ) {
 			}
 
 			if ( object.visible !== objectVisible.getValue() ) {
-				console.log(objectVisible.parent());
+	
 				editor.execute( new SetValueCommand( object, 'visible', objectVisible.getValue() ) );
 
 			}

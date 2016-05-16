@@ -261,3 +261,30 @@ var InterLayerConnection=function(){
 
 
 };
+var node = function(){
+  this.parent;
+  this.sibling=[];
+  this.children;
+  this.childtrue;
+}
+node.prototype.init = function(group) {
+  for(var i=0;i<group.length;i++){
+    this.sibling.push(group[i]);
+  }
+  this.childtrue = group.length;
+  this.children = new node();
+  this.children.init(group.children);
+}
+var root = function(){
+  this.parent = null;
+  this.sibling=[];
+  this.children;
+  this.childtrue;
+}
+root.prototype.init = function(group) {
+ 
+  this.sibling.push(group);
+  this.childtrue = 2;
+  this.children = new node();
+  this.children.init(group.children);
+}

@@ -136,9 +136,10 @@ Sidebar.Scene = function ( editor ) {
 
 			var object = objects[ i ];
 
-			if (object.type != 'Line') {
+			if (object.type == 'Object3D') {
 
 				var html = pad + '<span class="type ' + object.type + '"></span> ' + object.name;
+				//var html = pad + '<input type="checkbox" id=' + object.name + '> ' + object.name;
 
 				/*if ( object instanceof THREE.Mesh ) {
 
@@ -197,7 +198,7 @@ Sidebar.Scene = function ( editor ) {
 
 		//options.push( { static: true, value: camera.id, html: '<span class="type ' + camera.type + '"></span> ' + camera.name } );
 		//options.push( { static: true, value: scene.id, html: '<span class="type ' + scene.type + '"></span> ' + scene.name + getScript( scene.uuid ) } );
-
+	
 		this.addObjects( scene.children, '', options );
 
 		outliner.setOptions( options );

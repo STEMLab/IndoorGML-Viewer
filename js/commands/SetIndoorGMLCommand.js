@@ -95,6 +95,7 @@ SetIndoorGMLCommand.prototype = {
 
 		var group = new THREE.Object3D;
     group.name='IndoorFeatures';
+
     var primalSpaceFeatures = new THREE.Object3D;
     primalSpaceFeatures.name='primalSpaceFeatures';
 
