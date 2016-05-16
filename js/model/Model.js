@@ -263,28 +263,59 @@ var InterLayerConnection=function(){
 };
 var node = function(){
   this.parent;
-  this.sibling=[];
-  this.children;
+  this.me;
+  this.children = [];
   this.childtrue;
 }
-node.prototype.init = function(group) {
-  for(var i=0;i<group.length;i++){
-    this.sibling.push(group[i]);
+node.prototype.init = function(group,parent) {
+  this.parent = parent;
+  this.me = group;
+  var children = group.children;
+  this.childtrue = children.length;
+  for(var i = 0;i < children.length;i++) {
+    var child = new node();
+    child.init(group.children[i], this);
+    this.children.push(child);
+  } 
+}
+node.prototype.childset = function(flag) {
+  this.me.visible = flag;
+  for(var i = 0; i < this.children.length; i++) {
+    this.children[i].childset(flag);
   }
-  this.childtrue = group.length;
-  this.children = new node();
-  this.children.init(group.children);
 }
-var root = function(){
-  this.parent = null;
-  this.sibling=[];
-  this.children;
-  this.childtrue;
+node.prototype.parentset = function() {
+  if(this.childtrue == this.children.length) {
+    this.me.visible = true;
+  }
+  else if(this.childtrue == 0) {
+    this.me.visible = false;
+  }
+  else {
+    this.me.visible = null;
+  }
 }
-root.prototype.init = function(group) {
- 
-  this.sibling.push(group);
-  this.childtrue = 2;
-  this.children = new node();
-  this.children.init(group.children);
+node.prototype.change = function(group) {
+  
+  if(this.me == group) {
+    if(this.parent !== null) {
+      if(group.visible == true) {  
+        this.parent.childtrue++;
+      } 
+      else {  
+        this.parent.childtrue--;
+      }
+      this.parent.parentset();
+    }
+    
+    var children = this.children;
+    for(var i = 0;i < children.length;i++) {
+      children[i].childset(group.visible);
+    } 
+  }
+  else if(this.children !== 'undefined'){
+    for(var i = 0;i < this.children.length;i++) {
+      this.children[i].change(group);
+    } 
+  }
 }

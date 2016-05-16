@@ -13,7 +13,7 @@ Sidebar.Object = function ( editor ) {
 
 	// Actions
 
-	
+
 	// type
 
 	var objectTypeRow = new UI.Row();
@@ -57,7 +57,7 @@ Sidebar.Object = function ( editor ) {
 
 	container.add( objectNameRow );
 
-	
+
 	/*var objectActions = new UI.Select().setPosition( 'absolute' ).setRight( '8px' ).setFontSize( '11px' );
 	objectActions.setOptions( {
 
@@ -268,7 +268,6 @@ Sidebar.Object = function ( editor ) {
 
 	var objectVisibleRow = new UI.Row();
 	var objectVisible = new UI.Checkbox().onChange( update );
-
 	objectVisibleRow.add( new UI.Text( 'Visible' ).setWidth( '90px' ) );
 	objectVisibleRow.add( objectVisible );
 
@@ -356,7 +355,13 @@ Sidebar.Object = function ( editor ) {
 		update();
 
 	}
+	function updatetree(object) {
+	
+			//editor.execute( new SetValueCommand( object, 'visible', objectVisible.getValue() ) );
+			//objectVisible.setValue(null)
+			tree.change(object);
 
+	}
 	function update() {
 
 		var object = editor.selected;
@@ -460,9 +465,9 @@ Sidebar.Object = function ( editor ) {
 			}
 
 			if ( object.visible !== objectVisible.getValue() ) {
-	
-				editor.execute( new SetValueCommand( object, 'visible', objectVisible.getValue() ) );
 
+				editor.execute( new SetValueCommand( object, 'visible', objectVisible.getValue() ) );
+				updatetree(object);
 			}
 
 			if ( object.castShadow !== undefined && object.castShadow !== objectCastShadow.getValue() ) {
@@ -605,7 +610,11 @@ Sidebar.Object = function ( editor ) {
 
 	function updateUI( object ) {
 		console.log("update ui");
-		
+		if(object.visible == null) {
+			objectVisible.indeterminate = true;
+			objectVisible.checked = false;
+			console.log(objectVisible);
+		}
 		if(typeof Information[object.name] != 'undefined') {
 			//property1.setValue( 'ID' );
 			property2.setValue( 'Name' );
@@ -645,7 +654,7 @@ Sidebar.Object = function ( editor ) {
 			objectName.setValue( TransitionInformation[object.name].weight );
 		}
 		else {
-			
+
 			objectType.setValue( '' );
 			objectUUID.setValue( '' );
 			objectName.setValue( '' );

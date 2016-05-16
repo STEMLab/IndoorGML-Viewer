@@ -170,7 +170,6 @@ var Viewport = function ( editor ) {
 				if ( object.userData.object !== undefined ) {
 
 					// helper
-
 					editor.select( object.userData.object );
 
 				} else {
