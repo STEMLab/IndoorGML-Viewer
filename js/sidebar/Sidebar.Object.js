@@ -360,6 +360,7 @@ Sidebar.Object = function ( editor ) {
 			//editor.execute( new SetValueCommand( object, 'visible', objectVisible.getValue() ) );
 			//objectVisible.setValue(null)
 			tree.change(object);
+			editor.signals.objectChanged.dispatch( object );
 
 	}
 	function update() {
