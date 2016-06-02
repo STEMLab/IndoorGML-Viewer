@@ -46,18 +46,16 @@ Sidebar.Object = function ( editor ) {
 	// name
 
 	var objectNameRow = new UI.Row();
-	var objectName = new UI.Text().setWidth( '150px' ).setFontSize( '12px' ).onChange( function () {
-
-		editor.execute( new SetValueCommand( editor.selected, 'name', objectName.getValue() ) );
-
-	} );
 	var property3 = new UI.Text( '' ).setWidth( '90px' );
+	var objectName = new UI.Text().setWidth( '150px' ).setFontSize( '12px' );
+
+	
 	objectNameRow.add( property3 );
 	objectNameRow.add( objectName );
 
 	container.add( objectNameRow );
 
-
+	
 	/*var objectActions = new UI.Select().setPosition( 'absolute' ).setRight( '8px' ).setFontSize( '11px' );
 	objectActions.setOptions( {
 
@@ -274,7 +272,33 @@ Sidebar.Object = function ( editor ) {
 	container.add( objectVisibleRow );
 
 	// user data
+//var objectSizeRow = UI.Row();
+	var objectSizeName = new UI.Text('Size').setWidth( '90px' );
 
+	var objectSize = new  UI.Select().setFontSize( '11px' );
+ 	objectSize.setOptions( {
+ 		'0.03': '0.03',
+ 		'0.1': '0.1',
+ 		'0.5': '0.5',
+ 	} );
+ 	objectSize.onClick( function ( event ) {
+ 
+ 		event.stopPropagation(); // Avoid panel collapsing
+
+ 	} );
+ 	objectSize.onChange( function ( event ) {
+ 
+ 		//var object = editor.selected;
+ 		var geometry = new THREE.SphereBufferGeometry( this.getValue(), 32, 16 );
+ 		
+ 		editor.execute( new SetGeometryListCommand( geometry ) );	
+ 		
+ 		this.setValue( 'Size' );
+ 
+ 	} );
+ 	//objectSizeRow.add(objectSizeName);
+ 	//objectSizeRow.add(objectSize);
+ 	container.add(objectSize);
 	var timeout;
 
 	var objectUserDataRow = new UI.Row();
@@ -611,6 +635,7 @@ Sidebar.Object = function ( editor ) {
 
 	function updateUI( object ) {
 		console.log("update ui");
+
 		if(object.visible == null) {
 			objectVisible.indeterminate = true;
 			objectVisible.checked = false;
@@ -640,6 +665,8 @@ Sidebar.Object = function ( editor ) {
 			}
 			objectUUID.setValue(constring);
 			objectName.setValue( StateInformation[object.name].duality );
+			
+			
 		}
 		else if(typeof TransitionInformation[object.name] != 'undefined') {
 			//property1.setValue( 'ID' );
@@ -654,8 +681,16 @@ Sidebar.Object = function ( editor ) {
 			objectUUID.setValue(constring);
 			objectName.setValue( TransitionInformation[object.name].weight );
 		}
+		else if(typeof BoundaryInformation[object.name] != 'undefined') {
+			//property1.setValue( 'ID' );
+			property2.setValue( 'Name' );
+			property3.setValue( 'Duality' );
+			objectType.setValue( BoundaryInformation[object.name].cellBoundaryid );
+			objectUUID.setValue(BoundaryInformation[object.name].cellBoundaryname);
+			objectName.setValue( BoundaryInformation[object.name].duality);
+		}
 		else {
-
+			//console.log(BoundaryInformation[object.name]);
 			objectType.setValue( '' );
 			objectUUID.setValue( '' );
 			objectName.setValue( '' );

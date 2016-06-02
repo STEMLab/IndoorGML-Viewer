@@ -88,8 +88,8 @@ var Editor = function () {
 	this.sceneHelpers = new THREE.Scene();
 
 	/* Axis Helper */
-	this.axisHelper = new THREE.AxisHelper(10);
-	this.sceneHelpers.add( this.axisHelper );
+	//this.axisHelper = new THREE.AxisHelper(10);
+	//this.sceneHelpers.add( this.axisHelper );
 
 	this.object = {};
 	this.geometries = {};

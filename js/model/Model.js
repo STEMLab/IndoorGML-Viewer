@@ -45,6 +45,7 @@ var CellSpace = function(){
   this.cellname;
   this.geometry=[]; //Polygon array
   this.duality;
+  this.partialboundedBy;
 }
  CellSpace.prototype.init = function(jsoncontent,maxmin_xyz) {
   this.cellid=jsoncontent.id;
@@ -58,7 +59,10 @@ var CellSpace = function(){
   if(typeof du !=='undefined'){
     this.duality=du.href;
   }
-
+  var bound=jsoncontent.partialboundedBy;
+    if(typeof bound !=='undefined'){
+      this.partialboundedBy=bound[0].href;
+  }
   var geod=jsoncontent.geometry3D;
   if(typeof geod !== 'undefined'){
     var surfaces=geod.abstractSolid.value.exterior.shell.surfaceMember;
@@ -74,7 +78,38 @@ var CellSpace = function(){
   return maxmin_xyz;
 };
 
+var CellSpaceBoundary = function(){
+  this.cellBoundaryid;
+  this.cellBoundaryname;
+  this.geometry=[]; //float array
+  this.duality;
+}
+ CellSpaceBoundary.prototype.init = function(jsoncontent,maxmin_xyz) {
+  this.cellBoundaryid=jsoncontent.id;
+  var n=jsoncontent.name;
+  if(typeof n !=='undefined'){
+    this.cellBoundaryname=n[0].value;
+  }
 
+  //console.log(this.cellname);
+  var du=jsoncontent.duality;
+  if(typeof du !=='undefined'){
+    this.duality=du.href;
+  }
+
+  var geod=jsoncontent.geometry3D;
+  if(typeof geod !== 'undefined'){
+    var points=geod.abstractSurface.value.exterior.abstractRing.value.posOrPointPropertyOrPointRep;
+    for(var i=0;i<points.length;i++){
+      var temp=points[i].value.value;
+      this.geometry = this.geometry.concat([temp[0],temp[2],temp[1]]);
+    }
+  }
+  else{
+    geod=jsoncontent.geometry2D;
+  }
+  return maxmin_xyz;
+};
 
 
 
@@ -231,12 +266,13 @@ var InterLayerConnection=function(){
 
  var Indoor = function(){
     this.primalSpaceFeature=[]; //CellSpace array
+    this.cellSpaceBoundaryMember=[];
     this.multiLayeredGraph=[]; //Graph array
     this.interLayerConnectionMember=[]; //InterLayerConnection array
  }
  Indoor.prototype.init = function(jsoncontent) {
   var maxmin_xyz=[];
-  var cells=jsoncontent.value.primalSpaceFeatures.primalSpaceFeatures.cellSpaceMember;
+  var cells = jsoncontent.value.primalSpaceFeatures.primalSpaceFeatures.cellSpaceMember;
   if(typeof cells !=='undefined'){
     for(var i=0;i<cells.length;i++){
       var c=new CellSpace();
@@ -244,7 +280,14 @@ var InterLayerConnection=function(){
       this.primalSpaceFeature.push(c);
     }
   }
-
+  var cellboundarys = jsoncontent.value.primalSpaceFeatures.primalSpaceFeatures.cellSpaceBoundaryMember;
+  if(typeof cellboundarys !=='undefined'){
+    for(var i=0;i<cellboundarys.length;i++){
+      var cb=new CellSpaceBoundary();
+      maxmin_xyz=cb.init(cellboundarys[i].abstractFeature.value,maxmin_xyz);
+      this.cellSpaceBoundaryMember.push(cb);
+    }
+  }
 
   var layers=jsoncontent.value.multiLayeredGraph.spaceLayers[0].spaceLayerMember;
   //layers[0].space

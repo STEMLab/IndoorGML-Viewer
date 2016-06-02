@@ -61,6 +61,17 @@ SetIndoorGMLCommand.prototype = {
         }
         CellDictionary[ cells[i].cellid ] = cell;
     }
+
+    var cellboundary = indoor.cellSpaceBoundaryMember;
+
+    for(var j = 0; j < cellboundary.length; j++){
+        this.transformCoordinates(cellboundary[j].geometry);
+        var surface = this.triangulate(cellboundary[j].geometry,[]);
+        BoundaryDictionary[ cellboundary[j].cellBoundaryid ] = surface;
+        BoundaryInformation[cellboundary[j].cellBoundaryid]= cellboundary[j];
+    }
+    
+    
     var graphs=indoor.multiLayeredGraph;
 
         for(var i=0;i<graphs.length;i++){
@@ -97,7 +108,7 @@ SetIndoorGMLCommand.prototype = {
     group.name='IndoorFeatures';
 
     var primalSpaceFeatures = new THREE.Object3D;
-    primalSpaceFeatures.name='primalSpaceFeatures';
+    primalSpaceFeatures.name='PrimalSpaceFeatures';
 
 		var cells = indoor.primalSpaceFeature;
     for(var i = 0; i < cells.length; i++){        
@@ -143,6 +154,21 @@ SetIndoorGMLCommand.prototype = {
         Information[cells[i].cellid]=cells[i];
     }
     group.add(primalSpaceFeatures);
+    var cellSpaceBoundary = new THREE.Object3D;
+    cellSpaceBoundary.name = 'CellSpaceBoundary';
+    for(var key in BoundaryDictionary) {
+      var cellSpaceBoundaryMember = new THREE.Object3D;
+      cellSpaceBoundaryMember.name = key;
+      var geometry = new THREE.BufferGeometry();
+      var vertices = new Float32Array( BoundaryDictionary[key] );
+      geometry.addAttribute('position', new THREE.BufferAttribute( vertices, 3 ) );
+      var material = new THREE.MeshBasicMaterial( { color: 0x00ffff, opacity:0.3, transparent : true, side: THREE.DoubleSide} );
+      var mesh = new THREE.Mesh( geometry, material );
+
+      cellSpaceBoundaryMember.add(mesh);
+      cellSpaceBoundary.add(cellSpaceBoundaryMember);
+    }
+    group.add(cellSpaceBoundary);
     var MultiLayeredGraph = new THREE.Object3D;
     MultiLayeredGraph.name='MultiLayeredGraph';
     

@@ -42,24 +42,26 @@ var Loader = function ( editor ) {
 					var indoorgmlLoader = new IndoorGMLLoader();
 
 					var data = indoorgmlLoader.unmarshal(contents);
+					console.log(data);
+					//var worker = require('webworkify')(require('./loader/IndoorGMLLoader.js'));
+					//worker.addEventListener('message', function (ev) {
+					 	console.log("receive json!!");
+						var indoor = new Indoor();
+						//var maxmin_xyz = indoor.init(ev.data);
+						var maxmin_xyz = indoor.init(data);
+						console.log("init indoorfeature!!");
 
-					console.log("receive json!!");
+						var ic = new SetIndoorGMLCommand();
+						ic.makeGeometry(indoor,maxmin_xyz);
 
-					var indoor = new Indoor();
-					var maxmin_xyz = indoor.init(data);
-
-					console.log("init indoorfeature!!");
-
-					var ic = new SetIndoorGMLCommand();
-					ic.makeGeometry(indoor,maxmin_xyz);
-
-					console.log("move center & triangulation!!");
-					var object = ic.createObject(indoor);
-					console.log("create mesh!!");
-					tree = new node();
-					tree.init(object,null);
-					editor.execute( new AddObjectCommand( object ) );
-
+						console.log("move center & triangulation!!");
+						var object = ic.createObject(indoor);
+						console.log("create mesh!!");
+						tree = new node();
+						tree.init(object,null);
+						editor.execute( new AddObjectCommand( object ) );
+					//});
+					//worker.postMessage(contents);	
 				}, false );
 				reader.readAsText( file );
 
