@@ -112,7 +112,7 @@ SetIndoorGMLCommand.prototype = {
 
     var cellSpace = new THREE.Object3D;
     cellSpace.name = 'CellSpace';
-    console.log(indoor);
+    //console.log(indoor);
 		var cells = indoor.primalSpaceFeature;
     for(var i = 0; i < cells.length; i++){        
         var key = cells[i].cellid;

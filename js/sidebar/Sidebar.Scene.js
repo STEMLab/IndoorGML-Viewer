@@ -271,7 +271,7 @@ Sidebar.Scene = function ( editor ) {
 
 		if(object !== null) {
 			if((typeof Information[object.name] == 'undefined')&&(typeof StateInformation[object.name] == 'undefined')) {
-				console.log("refreshui in signals.objectSelected.add");
+				//console.log("refreshui in signals.objectSelected.add");
 				refreshUI();
 			}
 

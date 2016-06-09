@@ -654,7 +654,7 @@ Sidebar.Object = function ( editor ) {
 				objectConnects.setOptions( constring );
 				objectConnectsRow.setDisplay('block');
 			}
-			console.log(StateInformation[object.name].duality);
+			
 			if(StateInformation[object.name].duality != ""){
 				objectDuality.setLabel( StateInformation[object.name].duality );
 				objectDualityRow.setDisplay('block');
