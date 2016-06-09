@@ -10,8 +10,6 @@ Sidebar.Object = function ( editor ) {
 	container.setBorderTop( '0' );
 	container.setPaddingTop( '5px' );
 	container.setDisplay( 'none' );
-	
-
 	// type
 
 	var objectTypeRow = new UI.Row();
@@ -44,18 +42,18 @@ Sidebar.Object = function ( editor ) {
 	var objectConnectsRow = new UI.Row();
 	var objectConnects = new  UI.Select().setFontSize( '11px' );
 	objectConnects.onClick( function ( event ) {
- 
+
  		event.stopPropagation(); // Avoid panel collapsing
 
  	} );
 	objectConnects.onChange( function ( event ) {
- 
+
 		var id = this.getValue();
 		id = id.substr( 1, id.length );
 		var object = AllGeometry[id];
 		editor.select(object);
 		signals.sceneGraphChanged.dispatch();
- 
+
  	} );
 	objectConnectsRow.add( new UI.Text( 'Connects' ).setWidth( '90px' ) );
 	objectConnectsRow.add( objectConnects );
@@ -63,13 +61,13 @@ Sidebar.Object = function ( editor ) {
 	container.add( objectConnectsRow );
 
 
- 	
+
 
 
 
 	var objectDualityRow = new UI.Row();
 	var property3 = new UI.Text( 'Duality' ).setWidth( '90px' );
-	var objectDuality = new UI.Button( ).onClick( function () {
+	var objectDuality = new UI.Button().onClick( function () {
 		var id = this.getLabel();
 		id = id.substr( 1, id.length );
 		var object = AllGeometry[id];
@@ -78,13 +76,13 @@ Sidebar.Object = function ( editor ) {
 		//substr( 1, property.length )
 	} );
 
-	
+
 	objectDualityRow.add( property3 );
 	objectDualityRow.add( objectDuality );
 
 	container.add( objectDualityRow );
 
-	
+
 	/*var objectActions = new UI.Select().setPosition( 'absolute' ).setRight( '8px' ).setFontSize( '11px' );
 	objectActions.setOptions( {
 
@@ -291,7 +289,7 @@ Sidebar.Object = function ( editor ) {
 
 	//container.add( objectShadowRow );
 
-	
+
 	var timeout;
 
 	var objectUserDataRow = new UI.Row();
@@ -372,7 +370,7 @@ Sidebar.Object = function ( editor ) {
 		update();
 
 	}
-	
+
 	function update() {
 
 		var object = editor.selected;
@@ -631,12 +629,12 @@ Sidebar.Object = function ( editor ) {
 				objectName.setValue( Information[object.name].cellname);
 				objectNameRow.setDisplay('block');
 			}
-				
+
 			if(Information[object.name].duality != "") {
 				objectDuality.setLabel( Information[object.name].duality );
 				objectDualityRow.setDisplay('block');
 			}
-			
+
 		}
 		else if(typeof StateInformation[object.name] != 'undefined') {
 			objectType.setValue( StateInformation[object.name].stateid );
@@ -644,9 +642,9 @@ Sidebar.Object = function ( editor ) {
 				objectName.setValue(StateInformation[object.name].statename);
 				objectNameRow.setDisplay('block');
 			}
-				
+
 			var con = StateInformation[object.name].connects;
-			
+
 			if(con.length != 0) {
 				var constring={};
 				for(var i=0;i<con.length;i++) {
@@ -667,9 +665,9 @@ Sidebar.Object = function ( editor ) {
 				objectName.setValue( TransitionInformation[object.name].transitionname );
 				objectNameRow.setDisplay('block');
 			}
-				
+
 			var con = TransitionInformation[object.name].connects;
-			
+
 			if(con.length != 0) {
 				var constring={};
 				for(var i=0;i<con.length;i++) {
@@ -682,7 +680,7 @@ Sidebar.Object = function ( editor ) {
 				objectWeight.setValue( TransitionInformation[object.name].weight );
 				objectWeightRow.setDisplay('block');
 			}
-			
+
 			var td = TransitionInformation[object.name].duality;
 			if(td !== ""){
 				objectDuality.setLabel( td );
@@ -699,7 +697,7 @@ Sidebar.Object = function ( editor ) {
 				objectDuality.setLabel( BoundaryInformation[object.name].duality);
 				objectDualityRow.setDisplay('block');
 			}
-			
+
 		}
 		else {
 			objectType.setValue( '' );

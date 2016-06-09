@@ -1,5 +1,4 @@
-
-  this.floorflag = 0;
+this.floorflag = 0;
 
 var Polygon = function(){
   this.polyonid;
