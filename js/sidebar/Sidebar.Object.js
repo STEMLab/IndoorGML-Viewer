@@ -6,13 +6,23 @@ Sidebar.Object = function ( editor ) {
 
 	var signals = editor.signals;
 
+	var wholecontainer = new UI.Panel();
+	wholecontainer.setBorderTop( '0' );
+	wholecontainer.setPaddingTop( '5px' );
+	wholecontainer.setDisplay( 'none' );
+
 	var container = new UI.Panel();
 	container.setBorderTop( '0' );
-	container.setPaddingTop( '20px' );
+	container.setPaddingTop( '0px' );
 	container.setDisplay( 'none' );
-
+	
+	var viewcontainer = new UI.Panel();
+	viewcontainer.setBorderTop( '0' );
+	viewcontainer.setPaddingTop( '50px' );
+	viewcontainer.setDisplay( 'none' );
 	// Actions
-
+	wholecontainer.add(container);
+	wholecontainer.add(viewcontainer);
 
 	// type
 
@@ -26,34 +36,65 @@ Sidebar.Object = function ( editor ) {
 
 	// uuid
 
-	var objectUUIDRow = new UI.Row();
-	var objectUUID = new UI.Text().setWidth( '115px' ).setFontSize( '12px' );
-	var property2 = new UI.Text( 'Name' ).setWidth( '90px' );
-	/*var objectUUIDRenew = new UI.Button( '⟳' ).setMarginLeft( '7px' ).onClick( function () {
-
-		objectUUID.setValue( THREE.Math.generateUUID() );
-
-		editor.execute( new SetUuidCommand( editor.selected, objectUUID.getValue() ) );
-
-	} );*/
-	objectUUIDRow.add( property2 );
-	objectUUIDRow.add( objectUUID );
-	//objectUUIDRow.add( Infomation[objectUUID].id );
-	//objectUUIDRow.add( objectUUIDRenew );
-
-	container.add( objectUUIDRow );
-
-	// name
-
 	var objectNameRow = new UI.Row();
-	var property3 = new UI.Text( '' ).setWidth( '90px' );
-	var objectName = new UI.Text().setWidth( '150px' ).setFontSize( '12px' );
+	var objectName = new UI.Text().setWidth( '115px' );
+	var property2 = new UI.Text( 'Name' ).setWidth( '90px' );
 
-	
-	objectNameRow.add( property3 );
+	objectNameRow.add( property2 );
 	objectNameRow.add( objectName );
 
 	container.add( objectNameRow );
+
+	var objectWeightRow = new UI.Row();
+	var objectWeight = new UI.Text().setWidth( '115px' );
+
+	objectWeightRow.add( new UI.Text( 'Weight' ).setWidth( '90px' ) );
+	objectWeightRow.add( objectWeight );
+
+	container.add( objectWeightRow );
+
+	var objectConnectsRow = new UI.Row();
+	var objectConnects = new  UI.Select().setFontSize( '11px' );
+	objectConnects.onClick( function ( event ) {
+ 
+ 		event.stopPropagation(); // Avoid panel collapsing
+
+ 	} );
+	objectConnects.onChange( function ( event ) {
+ 
+		var id = this.getValue();
+		id = id.substr( 1, id.length );
+		var object = AllGeometry[id];
+		editor.select(object);
+		signals.sceneGraphChanged.dispatch();
+ 
+ 	} );
+	objectConnectsRow.add( new UI.Text( 'Connects' ).setWidth( '90px' ) );
+	objectConnectsRow.add( objectConnects );
+
+	container.add( objectConnectsRow );
+
+
+ 	
+
+
+
+	var objectDualityRow = new UI.Row();
+	var property3 = new UI.Text( 'Duality' ).setWidth( '90px' );
+	var objectDuality = new UI.Button( ).onClick( function () {
+		var id = this.getLabel();
+		id = id.substr( 1, id.length );
+		var object = AllGeometry[id];
+		editor.select(object);
+		signals.sceneGraphChanged.dispatch();
+		//substr( 1, property.length )
+	} );
+
+	
+	objectDualityRow.add( property3 );
+	objectDualityRow.add( objectDuality );
+
+	container.add( objectDualityRow );
 
 	
 	/*var objectActions = new UI.Select().setPosition( 'absolute' ).setRight( '8px' ).setFontSize( '11px' );
@@ -266,14 +307,13 @@ Sidebar.Object = function ( editor ) {
 
 	var objectVisibleRow = new UI.Row();
 	var objectVisible = new UI.Checkbox().onChange( update );
-	objectVisibleRow.add( new UI.Text( 'Visible' ).setWidth( '90px' ) );
+	objectVisibleRow.add( new UI.Text( 'Visibility' ).setWidth( '90px' ) );
 	objectVisibleRow.add( objectVisible );
 
-	container.add( objectVisibleRow );
+	viewcontainer.add( objectVisibleRow );
 
 	// user data
-//var objectSizeRow = UI.Row();
-	var objectSizeName = new UI.Text('Size').setWidth( '90px' );
+	var objectSizeRow = new UI.Row();
 
 	var objectSize = new  UI.Select().setFontSize( '11px' );
  	objectSize.setOptions( {
@@ -296,9 +336,9 @@ Sidebar.Object = function ( editor ) {
  		this.setValue( 'Size' );
  
  	} );
- 	//objectSizeRow.add(objectSizeName);
- 	//objectSizeRow.add(objectSize);
- 	container.add(objectSize);
+ 	objectSizeRow.add(new UI.Text('StateSize').setWidth( '90px' ));
+ 	objectSizeRow.add(objectSize);
+ 	viewcontainer.add(objectSizeRow);
 	var timeout;
 
 	var objectUserDataRow = new UI.Row();
@@ -587,14 +627,15 @@ Sidebar.Object = function ( editor ) {
 
 		if ( object !== null ) {
 
+			wholecontainer.setDisplay( 'block' );
 			container.setDisplay( 'block' );
-
+			viewcontainer.setDisplay( 'block' );
 			updateRows( object );
 			updateUI( object );
 
 		} else {
 
-			container.setDisplay( 'none' );
+			wholecontainer.setDisplay( 'none' );
 
 		}
 
@@ -634,65 +675,66 @@ Sidebar.Object = function ( editor ) {
 	} );
 
 	function updateUI( object ) {
-		console.log("update ui");
-
+		objectDualityRow.setDisplay('none');
+		objectWeightRow.setDisplay('none');
+		objectConnectsRow.setDisplay('none');
 		if(object.visible == null) {
 			objectVisible.indeterminate = true;
 			objectVisible.checked = false;
-			console.log(objectVisible);
 		}
 		if(typeof Information[object.name] != 'undefined') {
-			//property1.setValue( 'ID' );
-			property2.setValue( 'Name' );
-			property3.setValue( 'Duality' );
 			objectType.setValue( Information[object.name].cellid );
 
-			objectUUID.setValue( Information[object.name].cellname);
-			objectName.setValue( Information[object.name].duality );
+			objectName.setValue( Information[object.name].cellname);
+			objectDuality.setLabel( Information[object.name].duality );
+			objectDualityRow.setDisplay('block');
 		}
 		else if(typeof StateInformation[object.name] != 'undefined') {
-			//property1.setValue( 'ID' );
-			property2.setValue( 'Connects' );
-			property3.setValue( 'Duality' );
 			objectType.setValue( StateInformation[object.name].stateid );
+			objectName.setValue(StateInformation[object.name].statename);
 			var con = StateInformation[object.name].connects;
-			var constring="";
+			var constring={};
 			if(typeof con != 'undefined') {
-				constring=con[0];
-				for(var i=1;i<con.length;i++) {
-					constring+= " , " + con[i];
+				constring[con[0]]=con[0];
+				for(var i=0;i<con.length;i++) {
+					constring[con[i]]=con[i];
 				}
 			}
-			objectUUID.setValue(constring);
-			objectName.setValue( StateInformation[object.name].duality );
-			
+		 	objectConnects.setOptions( constring );
+			objectDuality.setLabel( StateInformation[object.name].duality );
+			objectDualityRow.setDisplay('block');
+			objectConnectsRow.setDisplay('block');
 			
 		}
 		else if(typeof TransitionInformation[object.name] != 'undefined') {
-			//property1.setValue( 'ID' );
-			property2.setValue( 'Connects' );
-			property3.setValue( 'Weight' );
 			objectType.setValue( TransitionInformation[object.name].transitionid );
+			objectName.setValue( TransitionInformation[object.name].transitionname );
 			var con = TransitionInformation[object.name].connects;
-			var constring="";
+			var constring={};
 			if(typeof con != 'undefined') {
-				constring=con[0] + " , " + con[1];
+				for(var i=0;i<con.length;i++) {
+					constring[con[i]]=con[i];
+				}
 			}
-			objectUUID.setValue(constring);
-			objectName.setValue( TransitionInformation[object.name].weight );
+			objectConnects.setOptions( constring );
+			objectConnectsRow.setDisplay('block');
+			objectWeight.setValue( TransitionInformation[object.name].weight );
+			objectWeightRow.setDisplay('block');
+			var td = TransitionInformation[object.name].duality;
+			if(td !== ""){
+				objectDuality.setLabel( td );
+				objectDualityRow.setDisplay('block');
+			}
 		}
 		else if(typeof BoundaryInformation[object.name] != 'undefined') {
-			//property1.setValue( 'ID' );
-			property2.setValue( 'Name' );
-			property3.setValue( 'Duality' );
 			objectType.setValue( BoundaryInformation[object.name].cellBoundaryid );
-			objectUUID.setValue(BoundaryInformation[object.name].cellBoundaryname);
-			objectName.setValue( BoundaryInformation[object.name].duality);
+			objectName.setValue(BoundaryInformation[object.name].cellBoundaryname);
+			objectDuality.setLabel( BoundaryInformation[object.name].duality);
+			objectDualityRow.setDisplay('block');
 		}
 		else {
 			//console.log(BoundaryInformation[object.name]);
 			objectType.setValue( '' );
-			objectUUID.setValue( '' );
 			objectName.setValue( '' );
 
 		}
@@ -815,6 +857,6 @@ Sidebar.Object = function ( editor ) {
 
 	}
 
-	return container;
+	return wholecontainer;
 
 };

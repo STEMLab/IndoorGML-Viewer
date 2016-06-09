@@ -110,6 +110,9 @@ SetIndoorGMLCommand.prototype = {
     var primalSpaceFeatures = new THREE.Object3D;
     primalSpaceFeatures.name='PrimalSpaceFeatures';
 
+    var cellSpace = new THREE.Object3D;
+    cellSpace.name='CellSpace';
+    console.log(indoor);
 		var cells = indoor.primalSpaceFeature;
     for(var i = 0; i < cells.length; i++){        
         var key = cells[i].cellid;
@@ -150,10 +153,12 @@ SetIndoorGMLCommand.prototype = {
                 cellgroup.add(line);
             }
         }
-        primalSpaceFeatures.add(cellgroup);
+        cellSpace.add(cellgroup);
+        AllGeometry[key]=cellgroup;
         Information[cells[i].cellid]=cells[i];
     }
-    group.add(primalSpaceFeatures);
+    primalSpaceFeatures.add(cellSpace);
+    
     var cellSpaceBoundary = new THREE.Object3D;
     cellSpaceBoundary.name = 'CellSpaceBoundary';
     for(var key in BoundaryDictionary) {
@@ -166,9 +171,11 @@ SetIndoorGMLCommand.prototype = {
       var mesh = new THREE.Mesh( geometry, material );
 
       cellSpaceBoundaryMember.add(mesh);
+      AllGeometry[key]=cellSpaceBoundaryMember;
       cellSpaceBoundary.add(cellSpaceBoundaryMember);
     }
-    group.add(cellSpaceBoundary);
+    primalSpaceFeatures.add(cellSpaceBoundary);
+    group.add(primalSpaceFeatures);
     var MultiLayeredGraph = new THREE.Object3D;
     MultiLayeredGraph.name='MultiLayeredGraph';
     
@@ -177,7 +184,7 @@ SetIndoorGMLCommand.prototype = {
     var material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
     for(var key in NetworkDictionary){
       var spaceLayers = new THREE.Object3D;
-      spaceLayers.name = key;
+      spaceLayers.name = "SpaceLayer : " + key;
       //var g=[];
       var nodes=NetworkDictionary[key][0];
       var node = new THREE.Object3D;
@@ -192,6 +199,7 @@ SetIndoorGMLCommand.prototype = {
           stategroup.add(mesh);
           //mesh.name = i;
           node.add(stategroup);
+          AllGeometry[i]=stategroup;
           //spaceLayers.add(mesh);
           //g.push(mesh);
       }
@@ -212,6 +220,7 @@ SetIndoorGMLCommand.prototype = {
           var edgegroup = new THREE.Object3D;
           edgegroup.name = i;
           edgegroup.add(line);
+          AllGeometry[i]=edgegroup;
           edge.add(edgegroup);
           //g.push(line);
       }

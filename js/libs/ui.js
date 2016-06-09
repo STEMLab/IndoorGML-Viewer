@@ -1067,7 +1067,11 @@ UI.Button.prototype.setLabel = function ( value ) {
 	return this;
 
 };
+UI.Button.prototype.getLabel = function () {
 
+	return this.dom.textContent;
+
+};
 
 // Modal
 

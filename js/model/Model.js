@@ -115,7 +115,7 @@ var CellSpaceBoundary = function(){
 
 var State = function(){
   this.stateid;
-  //this.statename;
+  this.statename;
   this.position=[];
   this.connects=[];
   this.duality;
@@ -123,7 +123,10 @@ var State = function(){
  State.prototype.init = function(jsoncontent,maxmin_xyz) {
   //console.log(JSON.stringify(jsoncontent, null, 2));
   this.stateid=jsoncontent.id;
-  //statename=jsoncontent.name[0].value;
+  this.statename=jsoncontent.name[0].value;
+  if(typeof this.statename == 'undefined') {
+    this.statename=this.stateid;
+  }
   var du=jsoncontent.duality;
   if(typeof du !== 'undefined'){
     this.duality=du.href;
@@ -162,13 +165,27 @@ var State = function(){
 var Transition=function(){
   this.transitionid;
   this.weight;
-  //this.transitionname;
+  this.transitionname;
   this.connects=[]; //array of size 2
   this.line=[]; //point array
+  this.duality;
 }
  Transition.prototype.init = function(jsoncontent,maxmin_xyz) {
   this.transitionid=jsoncontent.id;
+  this.transitionname=jsoncontent.name[0].value;
+  if(typeof this.transitionname == 'undefined') {
+    this.transitionname=this.transitionnameid;
+  }
   this.weight=jsoncontent.weight;
+
+  var du=jsoncontent.duality;
+  console.log(du);
+  if(typeof du == 'undefined'){
+    this.duality="";
+  }
+  else {
+    this.duality=du.href;
+  }
   var cons=jsoncontent.connects;
   for(var i=0;i<cons.length;i++){
     this.connects.push(cons[i].href);
