@@ -35,14 +35,14 @@ SetIndoorGMLCommand.prototype = {
 	},
 
   calCenter : function(maxmin_xyz) {
-      var boundingBoxLength=[maxmin_xyz[0]-maxmin_xyz[3],maxmin_xyz[1]-maxmin_xyz[4],maxmin_xyz[2]-maxmin_xyz[5]];
-      var maxLength=Math.max(boundingBoxLength[0],boundingBoxLength[1],boundingBoxLength[2]);
-      this.scale=20/maxLength;
-      this.translate=[-(boundingBoxLength[0]/2)-maxmin_xyz[3],-(boundingBoxLength[1]/2)-maxmin_xyz[4],-maxmin_xyz[5]];
+      var boundingBoxLength = [maxmin_xyz[0] - maxmin_xyz[3], maxmin_xyz[1] - maxmin_xyz[4], maxmin_xyz[2] - maxmin_xyz[5]];
+      var maxLength = Math.max(boundingBoxLength[0], boundingBoxLength[1], boundingBoxLength[2]);
+      this.scale = 20 / maxLength;
+      this.translate = [-(boundingBoxLength[0] / 2) - maxmin_xyz[3], -(boundingBoxLength[1] / 2) - maxmin_xyz[4], -maxmin_xyz[5]];
  
   },
 
-	makeGeometry : function(indoor,maxmin_xyz) {
+	makeGeometry : function(indoor, maxmin_xyz) {
 
 		var cells = indoor.primalSpaceFeature;
     
@@ -57,7 +57,7 @@ SetIndoorGMLCommand.prototype = {
 
             var surface = this.triangulate(surfaces[j].exterior, surfaces[j].interior);
             //cell.push(surface);
-            cell=cell.concat(surface);
+            cell = cell.concat(surface);
         }
         CellDictionary[ cells[i].cellid ] = cell;
     }
@@ -68,35 +68,35 @@ SetIndoorGMLCommand.prototype = {
         this.transformCoordinates(cellboundary[j].geometry);
         var surface = this.triangulate(cellboundary[j].geometry,[]);
         BoundaryDictionary[ cellboundary[j].cellBoundaryid ] = surface;
-        BoundaryInformation[cellboundary[j].cellBoundaryid]= cellboundary[j];
+        BoundaryInformation[cellboundary[j].cellBoundaryid] = cellboundary[j];
     }
     
     
-    var graphs=indoor.multiLayeredGraph;
+    var graphs = indoor.multiLayeredGraph;
 
-        for(var i=0;i<graphs.length;i++){
-            var graph=[];
-            var nodes={};
-            var states=graphs[i].stateMember;
-            for(var j=0;j<states.length;j++){
+        for(var i = 0; i < graphs.length; i++){
+            var graph = [];
+            var nodes = {};
+            var states = graphs[i].stateMember;
+            for(var j = 0; j < states.length; j++){
                 this.transformCoordinates(states[j].position);
-                var state=states[j].position;
-                nodes[states[j].stateid]=state;
-                StateInformation[states[j].stateid]=states[j];
+                var state = states[j].position;
+                nodes[states[j].stateid] = state;
+                StateInformation[states[j].stateid] = states[j];
             }
             graph.push(nodes);
 
-            var edges={};
-            var trasitions=graphs[i].transitionMember;
-            for(var j=0;j<trasitions.length;j++){
+            var edges = {};
+            var trasitions = graphs[i].transitionMember;
+            for(var j = 0; j < trasitions.length; j++){
                 this.transformCoordinates(trasitions[j].line);
-                var trasition=trasitions[j].line;
-                edges[trasitions[j].transitionid]= trasition;
-                TransitionInformation[trasitions[j].transitionid]=trasitions[j];
+                var trasition = trasitions[j].line;
+                edges[trasitions[j].transitionid] = trasition;
+                TransitionInformation[trasitions[j].transitionid] = trasitions[j];
             }
             graph.push(edges);
 
-            NetworkDictionary[graphs[i].graphid]=graph;
+            NetworkDictionary[graphs[i].graphid] = graph;
 
         }
     //console.log(CellDictionary);
@@ -105,13 +105,13 @@ SetIndoorGMLCommand.prototype = {
 	createObject : function(indoor) {
 
 		var group = new THREE.Object3D;
-    group.name='IndoorFeatures';
+    group.name = 'IndoorFeatures';
 
     var primalSpaceFeatures = new THREE.Object3D;
-    primalSpaceFeatures.name='PrimalSpaceFeatures';
+    primalSpaceFeatures.name = 'PrimalSpaceFeatures';
 
     var cellSpace = new THREE.Object3D;
-    cellSpace.name='CellSpace';
+    cellSpace.name = 'CellSpace';
     console.log(indoor);
 		var cells = indoor.primalSpaceFeature;
     for(var i = 0; i < cells.length; i++){        
@@ -154,8 +154,8 @@ SetIndoorGMLCommand.prototype = {
             }
         }
         cellSpace.add(cellgroup);
-        AllGeometry[key]=cellgroup;
-        Information[cells[i].cellid]=cells[i];
+        AllGeometry[key] = cellgroup;
+        Information[cells[i].cellid] = cells[i];
     }
     primalSpaceFeatures.add(cellSpace);
     
@@ -171,13 +171,13 @@ SetIndoorGMLCommand.prototype = {
       var mesh = new THREE.Mesh( geometry, material );
 
       cellSpaceBoundaryMember.add(mesh);
-      AllGeometry[key]=cellSpaceBoundaryMember;
+      AllGeometry[key] = cellSpaceBoundaryMember;
       cellSpaceBoundary.add(cellSpaceBoundaryMember);
     }
     primalSpaceFeatures.add(cellSpaceBoundary);
     group.add(primalSpaceFeatures);
     var MultiLayeredGraph = new THREE.Object3D;
-    MultiLayeredGraph.name='MultiLayeredGraph';
+    MultiLayeredGraph.name = 'MultiLayeredGraph';
     
 
     var geometry = new THREE.SphereBufferGeometry( 0.03, 32, 16 );
@@ -186,33 +186,33 @@ SetIndoorGMLCommand.prototype = {
       var spaceLayers = new THREE.Object3D;
       spaceLayers.name = "SpaceLayer : " + key;
       //var g=[];
-      var nodes=NetworkDictionary[key][0];
+      var nodes = NetworkDictionary[key][0];
       var node = new THREE.Object3D;
       node.name = "nodes";
       for(var i in nodes){
           var mesh = new THREE.Mesh( geometry, material );
-          mesh.position.x=nodes[i][0];
-          mesh.position.y=nodes[i][1];
-          mesh.position.z=nodes[i][2];
+          mesh.position.x = nodes[i][0];
+          mesh.position.y = nodes[i][1];
+          mesh.position.z = nodes[i][2];
           var stategroup = new THREE.Object3D;
           stategroup.name = i;
           stategroup.add(mesh);
           //mesh.name = i;
           node.add(stategroup);
-          AllGeometry[i]=stategroup;
+          AllGeometry[i] = stategroup;
           //spaceLayers.add(mesh);
           //g.push(mesh);
       }
       spaceLayers.add(node);
-      var edges=NetworkDictionary[key][1];
+      var edges = NetworkDictionary[key][1];
       var edge = new THREE.Object3D;
       edge.name = "edges";
       var material = new THREE.LineBasicMaterial({color: 0x00ffff,linewidth:10});
 
       for(var i in edges){
           geometry = new THREE.Geometry();
-          for(var k=0;k<edges[i].length;k+=3){
-              geometry.vertices.push(new THREE.Vector3( edges[i][k], edges[i][k+1], edges[i][k+2]));
+          for(var k = 0; k < edges[i].length; k+=3){
+              geometry.vertices.push(new THREE.Vector3( edges[i][k], edges[i][k + 1], edges[i][k + 2]));
           }
           var line = new THREE.Line( geometry, material );
           //line.name = i;
@@ -220,12 +220,12 @@ SetIndoorGMLCommand.prototype = {
           var edgegroup = new THREE.Object3D;
           edgegroup.name = i;
           edgegroup.add(line);
-          AllGeometry[i]=edgegroup;
+          AllGeometry[i] = edgegroup;
           edge.add(edgegroup);
           //g.push(line);
       }
       spaceLayers.add(edge);
-      AllGeometry[key]=spaceLayers;
+      AllGeometry[key] = spaceLayers;
       MultiLayeredGraph.add(spaceLayers);
     }
     group.add(MultiLayeredGraph);

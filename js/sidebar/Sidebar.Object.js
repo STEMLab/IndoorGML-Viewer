@@ -622,10 +622,11 @@ Sidebar.Object = function ( editor ) {
 		objectWeightRow.setDisplay('none');
 		objectConnectsRow.setDisplay('none');
 		objectNameRow.setDisplay('none');
-		
+		objectTypeRow.setDisplay('block');
 		if(typeof Information[object.name] != 'undefined') {
 			objectType.setValue( Information[object.name].cellid );
-			if(Information[object.name].cellname !== 'undefined'){
+
+			if(Information[object.name].cellname !== "" ){
 				objectName.setValue( Information[object.name].cellname);
 				objectNameRow.setDisplay('block');
 			}
@@ -638,7 +639,7 @@ Sidebar.Object = function ( editor ) {
 		}
 		else if(typeof StateInformation[object.name] != 'undefined') {
 			objectType.setValue( StateInformation[object.name].stateid );
-			if(StateInformation[object.name].statename != 'undefined'){
+			if(StateInformation[object.name].statename != ""){
 				objectName.setValue(StateInformation[object.name].statename);
 				objectNameRow.setDisplay('block');
 			}
@@ -646,9 +647,9 @@ Sidebar.Object = function ( editor ) {
 			var con = StateInformation[object.name].connects;
 
 			if(con.length != 0) {
-				var constring={};
-				for(var i=0;i<con.length;i++) {
-					constring[con[i]]=con[i];
+				var constring = {};
+				for(var i = 0; i < con.length; i++) {
+					constring[con[i]] = con[i];
 				}
 				objectConnects.setOptions( constring );
 				objectConnectsRow.setDisplay('block');
@@ -661,7 +662,7 @@ Sidebar.Object = function ( editor ) {
 		}
 		else if(typeof TransitionInformation[object.name] != 'undefined') {
 			objectType.setValue( TransitionInformation[object.name].transitionid );
-			if(TransitionInformation[object.name].transitionname != 'undefined'){
+			if(TransitionInformation[object.name].transitionname != ""){
 				objectName.setValue( TransitionInformation[object.name].transitionname );
 				objectNameRow.setDisplay('block');
 			}
@@ -669,9 +670,9 @@ Sidebar.Object = function ( editor ) {
 			var con = TransitionInformation[object.name].connects;
 
 			if(con.length != 0) {
-				var constring={};
-				for(var i=0;i<con.length;i++) {
-					constring[con[i]]=con[i];
+				var constring = {};
+				for(var i = 0; i < con.length; i++) {
+					constring[con[i]] = con[i];
 				}
 				objectConnects.setOptions( constring );
 				objectConnectsRow.setDisplay('block');
@@ -689,7 +690,7 @@ Sidebar.Object = function ( editor ) {
 		}
 		else if(typeof BoundaryInformation[object.name] != 'undefined') {
 			objectType.setValue( BoundaryInformation[object.name].cellBoundaryid );
-			if(BoundaryInformation[object.name].cellBoundaryname != 'undefined'){
+			if(BoundaryInformation[object.name].cellBoundaryname != ""){
 				objectName.setValue(BoundaryInformation[object.name].cellBoundaryname);
 				objectNameRow.setDisplay('block');
 			}
@@ -700,6 +701,7 @@ Sidebar.Object = function ( editor ) {
 
 		}
 		else {
+			objectTypeRow.setDisplay('none');
 			objectType.setValue( '' );
 		}
 
