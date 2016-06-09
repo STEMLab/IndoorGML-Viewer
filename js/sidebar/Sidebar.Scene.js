@@ -156,15 +156,15 @@ Sidebar.Scene = function ( editor ) {
 
 				options.push( { value: object.id, html: html } );
 
-				var	index = parents.indexOf(object);
-				if(index != -1) {
-					this.addObjects( object.children, pad + '&nbsp;&nbsp;&nbsp;', options);
-					continue;
-				}
-
 				if(editor.selected !== null) {
+					var	index = parents.indexOf(object);
+					if(index != -1) {
+						this.addObjects( object.children, pad + '&nbsp;&nbsp;&nbsp;', options);
+						continue;
+					}
+
 					if(object == editor.selected) {
-						var index = expandList.indexOf(object);
+						index = expandList.indexOf(object);
 						if(index == -1) {
 							expandList.push(object);
 						} else {
@@ -173,7 +173,7 @@ Sidebar.Scene = function ( editor ) {
 					}
 				}
 				//console.log(editor.selected);
-				index = expandList.indexOf(object);
+				var index = expandList.indexOf(object);
 				if(index != -1) {
 					var expand = expandList[index];
 					while(expand) {
