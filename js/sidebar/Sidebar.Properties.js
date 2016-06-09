@@ -11,10 +11,11 @@ Sidebar.Properties = function ( editor ) {
 	var objectTab = new UI.Text( 'PROPERTIES' ).onClick( onClick );
 	var geometryTab = new UI.Text( 'GEOMETRY' ).onClick( onClick );
 	var materialTab = new UI.Text( 'MATERIAL' ).onClick( onClick );
+	var viewTab = new UI.Text('VIEW').onClick(onClick);
 
 	var tabs = new UI.Div();
 	tabs.setId( 'tabs' );
-	tabs.add( objectTab );
+	tabs.add( objectTab, viewTab );
 	//tabs.add( objectTab, geometryTab, materialTab );
 	container.add( tabs );
 
@@ -31,6 +32,10 @@ Sidebar.Properties = function ( editor ) {
 	);
 	container.add( object );
 
+	var view = new UI.Span().add(
+		new Sidebar.View( editor )
+	);
+	container.add( view );
 	//var geometry = new UI.Span().add(
 	//	new Sidebar.Geometry( editor )
 	//);
@@ -44,17 +49,23 @@ Sidebar.Properties = function ( editor ) {
 	function select( section ) {
 
 		objectTab.setClass( '' );
+		viewTab.setClass( '' );
 		geometryTab.setClass( '' );
 		materialTab.setClass( '' );
 
 		object.setDisplay( 'none' );
+		view.setDisplay( 'none' );
 		//geometry.setDisplay( 'none' );
 		material.setDisplay( 'none' );
 
 		switch ( section ) {
-			case 'OBJECT':
+			case 'PROPERTIES':
 				objectTab.setClass( 'selected' );
 				object.setDisplay( '' );
+				break;
+			case 'VIEW':
+				viewTab.setClass( 'selected' );
+				view.setDisplay( '' );
 				break;
 			case 'GEOMETRY':
 				geometryTab.setClass( 'selected' );
@@ -68,7 +79,7 @@ Sidebar.Properties = function ( editor ) {
 
 	}
 
-	select( 'OBJECT' );
+	select( 'PROPERTIES' );
 
 	return container;
 

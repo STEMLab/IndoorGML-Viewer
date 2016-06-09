@@ -6,23 +6,11 @@ Sidebar.Object = function ( editor ) {
 
 	var signals = editor.signals;
 
-	var wholecontainer = new UI.Panel();
-	wholecontainer.setBorderTop( '0' );
-	wholecontainer.setPaddingTop( '5px' );
-	wholecontainer.setDisplay( 'none' );
-
 	var container = new UI.Panel();
 	container.setBorderTop( '0' );
-	container.setPaddingTop( '0px' );
+	container.setPaddingTop( '5px' );
 	container.setDisplay( 'none' );
 	
-	var viewcontainer = new UI.Panel();
-	viewcontainer.setBorderTop( '0' );
-	viewcontainer.setPaddingTop( '50px' );
-	viewcontainer.setDisplay( 'none' );
-	// Actions
-	wholecontainer.add(container);
-	wholecontainer.add(viewcontainer);
 
 	// type
 
@@ -303,42 +291,7 @@ Sidebar.Object = function ( editor ) {
 
 	//container.add( objectShadowRow );
 
-	// visible
-
-	var objectVisibleRow = new UI.Row();
-	var objectVisible = new UI.Checkbox().onChange( update );
-	objectVisibleRow.add( new UI.Text( 'Visibility' ).setWidth( '90px' ) );
-	objectVisibleRow.add( objectVisible );
-
-	viewcontainer.add( objectVisibleRow );
-
-	// user data
-	var objectSizeRow = new UI.Row();
-
-	var objectSize = new  UI.Select().setFontSize( '11px' );
- 	objectSize.setOptions( {
- 		'0.03': '0.03',
- 		'0.1': '0.1',
- 		'0.5': '0.5',
- 	} );
- 	objectSize.onClick( function ( event ) {
- 
- 		event.stopPropagation(); // Avoid panel collapsing
-
- 	} );
- 	objectSize.onChange( function ( event ) {
- 
- 		//var object = editor.selected;
- 		var geometry = new THREE.SphereBufferGeometry( this.getValue(), 32, 16 );
- 		
- 		editor.execute( new SetGeometryListCommand( geometry ) );	
- 		
- 		this.setValue( 'Size' );
- 
- 	} );
- 	objectSizeRow.add(new UI.Text('StateSize').setWidth( '90px' ));
- 	objectSizeRow.add(objectSize);
- 	viewcontainer.add(objectSizeRow);
+	
 	var timeout;
 
 	var objectUserDataRow = new UI.Row();
@@ -419,14 +372,7 @@ Sidebar.Object = function ( editor ) {
 		update();
 
 	}
-	function updatetree(object) {
 	
-			//editor.execute( new SetValueCommand( object, 'visible', objectVisible.getValue() ) );
-			//objectVisible.setValue(null)
-			tree.change(object);
-			editor.signals.objectChanged.dispatch( object );
-
-	}
 	function update() {
 
 		var object = editor.selected;
@@ -529,11 +475,11 @@ Sidebar.Object = function ( editor ) {
 
 			}
 
-			if ( object.visible !== objectVisible.getValue() ) {
+			/*if ( object.visible !== objectVisible.getValue() ) {
 
 				editor.execute( new SetValueCommand( object, 'visible', objectVisible.getValue() ) );
 				updatetree(object);
-			}
+			}*/
 
 			if ( object.castShadow !== undefined && object.castShadow !== objectCastShadow.getValue() ) {
 
@@ -627,15 +573,14 @@ Sidebar.Object = function ( editor ) {
 
 		if ( object !== null ) {
 
-			wholecontainer.setDisplay( 'block' );
+			
 			container.setDisplay( 'block' );
-			viewcontainer.setDisplay( 'block' );
 			updateRows( object );
 			updateUI( object );
 
 		} else {
 
-			wholecontainer.setDisplay( 'none' );
+			container.setDisplay( 'none' );
 
 		}
 
@@ -679,10 +624,7 @@ Sidebar.Object = function ( editor ) {
 		objectWeightRow.setDisplay('none');
 		objectConnectsRow.setDisplay('none');
 		objectNameRow.setDisplay('none');
-		if(object.visible == null) {
-			objectVisible.indeterminate = true;
-			objectVisible.checked = false;
-		}
+		
 		if(typeof Information[object.name] != 'undefined') {
 			objectType.setValue( Information[object.name].cellid );
 			if(Information[object.name].cellname !== 'undefined'){
@@ -862,7 +804,7 @@ Sidebar.Object = function ( editor ) {
 
 		}
 
-		objectVisible.setValue( object.visible );
+		
 
 		try {
 
@@ -881,6 +823,6 @@ Sidebar.Object = function ( editor ) {
 
 	}
 
-	return wholecontainer;
+	return container;
 
 };
