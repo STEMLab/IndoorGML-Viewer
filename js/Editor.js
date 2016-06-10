@@ -436,6 +436,13 @@ Editor.prototype = {
 
 		BoundaryDictionary = {};
 		BoundaryInformation = {};
+		CellDictionary = {};//points of cell  for change of style
+		NetworkDictionary = {};//points of network for change of style
+		AllGeometry = {};//mesh of cell,mesh of network for change of visible
+		Information = {}; //cells
+		StateInformation = {}; //states
+		TransitionInformation = {}; //transtions
+		GraphInformation = {}; //graphs
 
 		this.signals.editorCleared.dispatch();
 

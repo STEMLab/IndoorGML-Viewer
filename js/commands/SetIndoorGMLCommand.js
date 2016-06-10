@@ -65,12 +65,8 @@ SetIndoorGMLCommand.prototype = {
     var cellboundary = indoor.cellSpaceBoundaryMember;
     
     for(var j = 0; j < cellboundary.length; j++) {
-      console.log(cellboundary[j].cellBoundaryid);
-        console.log(cellboundary[j].geometry);
         this.transformCoordinates(cellboundary[j].geometry);
-        console.log(cellboundary[j].geometry);
         var surface = this.triangulate(cellboundary[j].geometry, []);
-        console.log(surface);
         BoundaryDictionary[ cellboundary[j].cellBoundaryid ] = surface;
         BoundaryInformation[ cellboundary[j].cellBoundaryid ] = cellboundary[j];
     }
