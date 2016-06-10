@@ -125,7 +125,8 @@ textarea, input { outline: none; } /* osx */
 }
 
 #outliner .type:after {
-	content: '■';
+	/*content: '■';*/
+	content: '\25CF';
 }
 
 #outliner .Scene {
