@@ -17,19 +17,19 @@ var Polygon = function(){
       maxmin_xyz=[point[0],point[1],point[2],point[0],point[1],point[2]];
     }
     else{
-  
+
           maxmin_xyz[0]=Math.max(maxmin_xyz[0],point[0]);
           maxmin_xyz[1]=Math.max(maxmin_xyz[1],point[1]);
           maxmin_xyz[2]=Math.max(maxmin_xyz[2],point[2]);
           maxmin_xyz[3]=Math.min(maxmin_xyz[3],point[0]);
           maxmin_xyz[4]=Math.min(maxmin_xyz[4],point[1]);
           maxmin_xyz[5]=Math.min(maxmin_xyz[5],point[2]);
-         
+
     }
 
     //
   }
-  
+
   var ipoints=jsoncontent.interior;
   if(typeof ipoints !== 'undefined'){
     ipoints=ipoints[0].abstractRing.value.posOrPointPropertyOrPointRep;
@@ -122,8 +122,11 @@ var State = function(){
 }
  State.prototype.init = function(jsoncontent,maxmin_xyz) {
   //console.log(JSON.stringify(jsoncontent, null, 2));
-  this.stateid=jsoncontent.id;
-  this.statename=jsoncontent.name[0].value;
+  this.stateid = jsoncontent.id;
+  var n = jsoncontent.name;
+  if(typeof n !=='undefined') {
+    this.statename = n[0].value;
+  }
   if(typeof this.statename == 'undefined') {
     this.statename=this.stateid;
   }
@@ -238,13 +241,13 @@ var Graph = function(){
     this.graphname=name[0].value
     if(typeof this.graphname == 'undefined'){
       this.graphname=this.graphid;
-      
+
     }
   }
   else {
     this.graphname=this.graphid;
   }
-  
+
 
   var states=jsoncontent.nodes[0].stateMember;
   if(typeof states !== 'undefined'){
@@ -314,7 +317,7 @@ var InterLayerConnection=function(){
       var g=new Graph();
       maxmin_xyz=g.init(layers[i].spaceLayer,maxmin_xyz);
       this.multiLayeredGraph.push(g);
-      
+
     }
   }
   return maxmin_xyz;
@@ -336,7 +339,7 @@ node.prototype.init = function(group,parent) {
     var child = new node();
     child.init(group.children[i], this);
     this.children.push(child);
-  } 
+  }
 }
 node.prototype.childset = function(flag) {
   this.me.visible = flag;
@@ -356,26 +359,26 @@ node.prototype.parentset = function() {
   }
 }
 node.prototype.change = function(group) {
-  
+
   if(this.me == group) {
     if(this.parent !== null) {
-      if(group.visible == true) {  
+      if(group.visible == true) {
         this.parent.childtrue++;
-      } 
-      else {  
+      }
+      else {
         this.parent.childtrue--;
       }
       this.parent.parentset();
     }
-    
+
     var children = this.children;
     for(var i = 0;i < children.length;i++) {
       children[i].childset(group.visible);
-    } 
+    }
   }
   else if(this.children !== 'undefined'){
     for(var i = 0;i < this.children.length;i++) {
       this.children[i].change(group);
-    } 
+    }
   }
 }
