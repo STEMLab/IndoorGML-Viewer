@@ -58,6 +58,7 @@ var CellSpace = function(){
   if(typeof du !=='undefined'){
     this.duality=du.href;
   }
+  else this.duality="";
   var bound=jsoncontent.partialboundedBy;
     if(typeof bound !=='undefined'){
       this.partialboundedBy=bound[0].href;
@@ -95,6 +96,7 @@ var CellSpaceBoundary = function(){
   if(typeof du !=='undefined'){
     this.duality=du.href;
   }
+  else this.duality="";
 
   var geod=jsoncontent.geometry3D;
   if(typeof geod !== 'undefined'){
@@ -126,13 +128,11 @@ var State = function(){
   if(typeof n !=='undefined') {
     this.statename = n[0].value;
   }
-  if(typeof this.statename == 'undefined') {
-    this.statename=this.stateid;
-  }
   var du=jsoncontent.duality;
   if(typeof du !== 'undefined'){
     this.duality=du.href;
   }
+  else this.duality=""
 
   var cons=jsoncontent.connects;
   if(typeof cons !== 'undefined'){
@@ -173,20 +173,21 @@ var Transition=function(){
   this.duality;
 }
  Transition.prototype.init = function(jsoncontent,maxmin_xyz) {
-  this.transitionid=jsoncontent.id;
-  this.transitionname=jsoncontent.name[0].value;
-  if(typeof this.transitionname == 'undefined') {
-    this.transitionname=this.transitionnameid;
-  }
-  this.weight=jsoncontent.weight;
+  this.transitionid = jsoncontent.id;
 
+  if(typeof jsoncontent.name !== 'undefined') {
+    this.transitionname=jsoncontent.name[0].value;
+  }
+  if(typeof jsoncontent.weight !== 'undefined') {
+    this.weight = jsoncontent.weight;
+  }
+  
   var du=jsoncontent.duality;
-  console.log(du);
   if(typeof du == 'undefined'){
-    this.duality="";
+    this.duality = "";
   }
   else {
-    this.duality=du.href;
+    this.duality = du.href;
   }
   var cons=jsoncontent.connects;
   for(var i=0;i<cons.length;i++){

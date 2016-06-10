@@ -678,48 +678,69 @@ Sidebar.Object = function ( editor ) {
 		objectDualityRow.setDisplay('none');
 		objectWeightRow.setDisplay('none');
 		objectConnectsRow.setDisplay('none');
+		objectNameRow.setDisplay('none');
 		if(object.visible == null) {
 			objectVisible.indeterminate = true;
 			objectVisible.checked = false;
 		}
 		if(typeof Information[object.name] != 'undefined') {
 			objectType.setValue( Information[object.name].cellid );
+			if(Information[object.name].cellname !== 'undefined'){
+				objectName.setValue( Information[object.name].cellname);
+				objectNameRow.setDisplay('block');
+			}
 
-			objectName.setValue( Information[object.name].cellname);
-			objectDuality.setLabel( Information[object.name].duality );
-			objectDualityRow.setDisplay('block');
+			if(Information[object.name].duality != "") {
+				objectDuality.setLabel( Information[object.name].duality );
+				objectDualityRow.setDisplay('block');
+			}
+
 		}
 		else if(typeof StateInformation[object.name] != 'undefined') {
 			objectType.setValue( StateInformation[object.name].stateid );
-			objectName.setValue(StateInformation[object.name].statename);
+			if(StateInformation[object.name].statename != 'undefined'){
+				objectName.setValue(StateInformation[object.name].statename);
+				objectNameRow.setDisplay('block');
+			}
+
 			var con = StateInformation[object.name].connects;
-			var constring={};
-			if(typeof con != 'undefined') {
-				constring[con[0]]=con[0];
+
+			if(con.length != 0) {
+				var constring={};
 				for(var i=0;i<con.length;i++) {
 					constring[con[i]]=con[i];
 				}
+				objectConnects.setOptions( constring );
+				objectConnectsRow.setDisplay('block');
 			}
-		 	objectConnects.setOptions( constring );
-			objectDuality.setLabel( StateInformation[object.name].duality );
-			objectDualityRow.setDisplay('block');
-			objectConnectsRow.setDisplay('block');
-
+			console.log(StateInformation[object.name].duality);
+			if(StateInformation[object.name].duality != ""){
+				objectDuality.setLabel( StateInformation[object.name].duality );
+				objectDualityRow.setDisplay('block');
+			}
 		}
 		else if(typeof TransitionInformation[object.name] != 'undefined') {
 			objectType.setValue( TransitionInformation[object.name].transitionid );
-			objectName.setValue( TransitionInformation[object.name].transitionname );
+			if(TransitionInformation[object.name].transitionname != 'undefined'){
+				objectName.setValue( TransitionInformation[object.name].transitionname );
+				objectNameRow.setDisplay('block');
+			}
+
 			var con = TransitionInformation[object.name].connects;
-			var constring={};
-			if(typeof con != 'undefined') {
+
+			if(con.length != 0) {
+				var constring={};
 				for(var i=0;i<con.length;i++) {
 					constring[con[i]]=con[i];
 				}
+				objectConnects.setOptions( constring );
+				objectConnectsRow.setDisplay('block');
 			}
-			objectConnects.setOptions( constring );
-			objectConnectsRow.setDisplay('block');
-			objectWeight.setValue( TransitionInformation[object.name].weight );
-			objectWeightRow.setDisplay('block');
+			if(TransitionInformation[object.name].weight != 'undefined'){
+				objectWeight.setValue( TransitionInformation[object.name].weight );
+				objectWeightRow.setDisplay('block');
+			}
+
 			var td = TransitionInformation[object.name].duality;
 			if(td !== ""){
 				objectDuality.setLabel( td );
@@ -728,15 +749,18 @@ Sidebar.Object = function ( editor ) {
 		}
 		else if(typeof BoundaryInformation[object.name] != 'undefined') {
 			objectType.setValue( BoundaryInformation[object.name].cellBoundaryid );
-			objectName.setValue(BoundaryInformation[object.name].cellBoundaryname);
-			objectDuality.setLabel( BoundaryInformation[object.name].duality);
-			objectDualityRow.setDisplay('block');
+			if(BoundaryInformation[object.name].cellBoundaryname != 'undefined'){
+				objectName.setValue(BoundaryInformation[object.name].cellBoundaryname);
+				objectNameRow.setDisplay('block');
+			}
+			if(BoundaryInformation[object.name].duality != ""){
+				objectDuality.setLabel( BoundaryInformation[object.name].duality);
+				objectDualityRow.setDisplay('block');
+			}
+
 		}
 		else {
-			//console.log(BoundaryInformation[object.name]);
 			objectType.setValue( '' );
-			objectName.setValue( '' );
-
 		}
 
 
