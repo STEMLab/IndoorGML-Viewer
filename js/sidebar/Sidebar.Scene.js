@@ -33,6 +33,7 @@ Sidebar.Scene = function ( editor ) {
 	container.add( new UI.Break() );
 
 	var expandList = [];
+	var parents = [];
 	// fog
 
 	/*var updateFogParameters = function () {
@@ -155,6 +156,12 @@ Sidebar.Scene = function ( editor ) {
 
 				options.push( { value: object.id, html: html } );
 
+				var	index = parents.indexOf(object);
+				if(index != -1) {
+					this.addObjects( object.children, pad + '&nbsp;&nbsp;&nbsp;', options);
+					continue;
+				}
+
 				if(editor.selected !== null) {
 					if(object == editor.selected) {
 						var index = expandList.indexOf(object);
@@ -166,7 +173,7 @@ Sidebar.Scene = function ( editor ) {
 					}
 				}
 				//console.log(editor.selected);
-				var index = expandList.indexOf(object);
+				index = expandList.indexOf(object);
 				if(index != -1) {
 					var expand = expandList[index];
 					while(expand) {
@@ -198,8 +205,18 @@ Sidebar.Scene = function ( editor ) {
 
 		//options.push( { static: true, value: camera.id, html: '<span class="type ' + camera.type + '"></span> ' + camera.name } );
 		//options.push( { static: true, value: scene.id, html: '<span class="type ' + scene.type + '"></span> ' + scene.name + getScript( scene.uuid ) } );
-	
+
+		if(editor.selected !== null) {
+			var parent = editor.selected.parent;
+			while(parent) {
+				parents.push(parent);
+				parent = parent.parent;
+			}
+		}
+
 		this.addObjects( scene.children, '', options );
+
+		parents.splice(0, parents.length);
 
 		outliner.setOptions( options );
 

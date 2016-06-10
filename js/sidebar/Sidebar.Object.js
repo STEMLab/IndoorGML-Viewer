@@ -15,7 +15,7 @@ Sidebar.Object = function ( editor ) {
 	container.setBorderTop( '0' );
 	container.setPaddingTop( '0px' );
 	container.setDisplay( 'none' );
-	
+
 	var viewcontainer = new UI.Panel();
 	viewcontainer.setBorderTop( '0' );
 	viewcontainer.setPaddingTop( '50px' );
@@ -56,18 +56,18 @@ Sidebar.Object = function ( editor ) {
 	var objectConnectsRow = new UI.Row();
 	var objectConnects = new  UI.Select().setFontSize( '11px' );
 	objectConnects.onClick( function ( event ) {
- 
+
  		event.stopPropagation(); // Avoid panel collapsing
 
  	} );
 	objectConnects.onChange( function ( event ) {
- 
+
 		var id = this.getValue();
 		id = id.substr( 1, id.length );
 		var object = AllGeometry[id];
 		editor.select(object);
 		signals.sceneGraphChanged.dispatch();
- 
+
  	} );
 	objectConnectsRow.add( new UI.Text( 'Connects' ).setWidth( '90px' ) );
 	objectConnectsRow.add( objectConnects );
@@ -75,13 +75,13 @@ Sidebar.Object = function ( editor ) {
 	container.add( objectConnectsRow );
 
 
- 	
+
 
 
 
 	var objectDualityRow = new UI.Row();
 	var property3 = new UI.Text( 'Duality' ).setWidth( '90px' );
-	var objectDuality = new UI.Button( ).onClick( function () {
+	var objectDuality = new UI.Button().onClick( function () {
 		var id = this.getLabel();
 		id = id.substr( 1, id.length );
 		var object = AllGeometry[id];
@@ -90,13 +90,13 @@ Sidebar.Object = function ( editor ) {
 		//substr( 1, property.length )
 	} );
 
-	
+
 	objectDualityRow.add( property3 );
 	objectDualityRow.add( objectDuality );
 
 	container.add( objectDualityRow );
 
-	
+
 	/*var objectActions = new UI.Select().setPosition( 'absolute' ).setRight( '8px' ).setFontSize( '11px' );
 	objectActions.setOptions( {
 
@@ -322,19 +322,19 @@ Sidebar.Object = function ( editor ) {
  		'0.5': '0.5',
  	} );
  	objectSize.onClick( function ( event ) {
- 
+
  		event.stopPropagation(); // Avoid panel collapsing
 
  	} );
  	objectSize.onChange( function ( event ) {
- 
+
  		//var object = editor.selected;
  		var geometry = new THREE.SphereBufferGeometry( this.getValue(), 32, 16 );
- 		
- 		editor.execute( new SetGeometryListCommand( geometry ) );	
- 		
+
+ 		editor.execute( new SetGeometryListCommand( geometry ) );
+
  		this.setValue( 'Size' );
- 
+
  	} );
  	objectSizeRow.add(new UI.Text('StateSize').setWidth( '90px' ));
  	objectSizeRow.add(objectSize);
@@ -420,7 +420,7 @@ Sidebar.Object = function ( editor ) {
 
 	}
 	function updatetree(object) {
-	
+
 			//editor.execute( new SetValueCommand( object, 'visible', objectVisible.getValue() ) );
 			//objectVisible.setValue(null)
 			tree.change(object);
@@ -704,7 +704,7 @@ Sidebar.Object = function ( editor ) {
 			objectDuality.setLabel( StateInformation[object.name].duality );
 			objectDualityRow.setDisplay('block');
 			objectConnectsRow.setDisplay('block');
-			
+
 		}
 		else if(typeof TransitionInformation[object.name] != 'undefined') {
 			objectType.setValue( TransitionInformation[object.name].transitionid );
