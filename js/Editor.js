@@ -434,6 +434,9 @@ Editor.prototype = {
 
 		this.deselect();
 
+		BoundaryDictionary = {};
+		BoundaryInformation = {};
+
 		this.signals.editorCleared.dispatch();
 
 	},

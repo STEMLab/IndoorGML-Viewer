@@ -50,7 +50,7 @@ SetIndoorGMLCommand.prototype = {
     for(var i = 0; i < cells.length; i++) {
         var cell = [];
         var surfaces = cells[i].geometry;
-        for(var j = 0; j < surfaces.length; j++){
+        for(var j = 0; j < surfaces.length; j++) {
 
 						this.transformCoordinates(surfaces[j].exterior);
 						this.transformCoordinates(surfaces[j].interior);
@@ -63,42 +63,46 @@ SetIndoorGMLCommand.prototype = {
     }
 
     var cellboundary = indoor.cellSpaceBoundaryMember;
-
-    for(var j = 0; j < cellboundary.length; j++){
+    
+    for(var j = 0; j < cellboundary.length; j++) {
+      console.log(cellboundary[j].cellBoundaryid);
+        console.log(cellboundary[j].geometry);
         this.transformCoordinates(cellboundary[j].geometry);
-        var surface = this.triangulate(cellboundary[j].geometry,[]);
+        console.log(cellboundary[j].geometry);
+        var surface = this.triangulate(cellboundary[j].geometry, []);
+        console.log(surface);
         BoundaryDictionary[ cellboundary[j].cellBoundaryid ] = surface;
-        BoundaryInformation[cellboundary[j].cellBoundaryid] = cellboundary[j];
+        BoundaryInformation[ cellboundary[j].cellBoundaryid ] = cellboundary[j];
     }
     
     
     var graphs = indoor.multiLayeredGraph;
 
-        for(var i = 0; i < graphs.length; i++){
-            var graph = [];
-            var nodes = {};
-            var states = graphs[i].stateMember;
-            for(var j = 0; j < states.length; j++){
-                this.transformCoordinates(states[j].position);
-                var state = states[j].position;
-                nodes[states[j].stateid] = state;
-                StateInformation[states[j].stateid] = states[j];
-            }
-            graph.push(nodes);
-
-            var edges = {};
-            var trasitions = graphs[i].transitionMember;
-            for(var j = 0; j < trasitions.length; j++){
-                this.transformCoordinates(trasitions[j].line);
-                var trasition = trasitions[j].line;
-                edges[trasitions[j].transitionid] = trasition;
-                TransitionInformation[trasitions[j].transitionid] = trasitions[j];
-            }
-            graph.push(edges);
-
-            NetworkDictionary[graphs[i].graphid] = graph;
-
+    for(var i = 0; i < graphs.length; i++){
+        var graph = [];
+        var nodes = {};
+        var states = graphs[i].stateMember;
+        for(var j = 0; j < states.length; j++){
+            this.transformCoordinates(states[j].position);
+            var state = states[j].position;
+            nodes[states[j].stateid] = state;
+            StateInformation[states[j].stateid] = states[j];
         }
+        graph.push(nodes);
+
+        var edges = {};
+        var trasitions = graphs[i].transitionMember;
+        for(var j = 0; j < trasitions.length; j++){
+            this.transformCoordinates(trasitions[j].line);
+            var trasition = trasitions[j].line;
+            edges[trasitions[j].transitionid] = trasition;
+            TransitionInformation[trasitions[j].transitionid] = trasitions[j];
+        }
+        graph.push(edges);
+
+        NetworkDictionary[graphs[i].graphid] = graph;
+
+    }
     //console.log(CellDictionary);
 	},
 
@@ -170,12 +174,12 @@ SetIndoorGMLCommand.prototype = {
       var material = new THREE.MeshBasicMaterial( { color: 0x00ffff, opacity:0.3, transparent : true, side: THREE.DoubleSide} );
       var mesh = new THREE.Mesh( geometry, material );
 
-      cellSpaceBoundaryMember.add(mesh);
+      cellSpaceBoundaryMember.add( mesh );
       AllGeometry[key] = cellSpaceBoundaryMember;
-      cellSpaceBoundary.add(cellSpaceBoundaryMember);
+      cellSpaceBoundary.add( cellSpaceBoundaryMember );
     }
-    primalSpaceFeatures.add(cellSpaceBoundary);
-    group.add(primalSpaceFeatures);
+    primalSpaceFeatures.add( cellSpaceBoundary );
+    group.add( primalSpaceFeatures );
     var MultiLayeredGraph = new THREE.Object3D;
     MultiLayeredGraph.name = 'MultiLayeredGraph';
     
@@ -196,9 +200,9 @@ SetIndoorGMLCommand.prototype = {
           mesh.position.z = nodes[i][2];
           var stategroup = new THREE.Object3D;
           stategroup.name = i;
-          stategroup.add(mesh);
+          stategroup.add( mesh );
           //mesh.name = i;
-          node.add(stategroup);
+          node.add( stategroup );
           AllGeometry[i] = stategroup;
           //spaceLayers.add(mesh);
           //g.push(mesh);
@@ -207,14 +211,14 @@ SetIndoorGMLCommand.prototype = {
       var edges = NetworkDictionary[key][1];
       var edge = new THREE.Object3D;
       edge.name = "edges";
-      var material = new THREE.LineBasicMaterial({color: 0x00ffff,linewidth:10});
+      var linematerial = new THREE.LineBasicMaterial( { color: 0x00ffff, linewidth:1 } );
 
-      for(var i in edges){
+      for(var i in edges) {
           geometry = new THREE.Geometry();
-          for(var k = 0; k < edges[i].length; k+=3){
+          for(var k = 0; k < edges[i].length; k += 3){
               geometry.vertices.push(new THREE.Vector3( edges[i][k], edges[i][k + 1], edges[i][k + 2]));
           }
-          var line = new THREE.Line( geometry, material );
+          var line = new THREE.Line( geometry, linematerial );
           //line.name = i;
           //spaceLayers.add(line);
           var edgegroup = new THREE.Object3D;
