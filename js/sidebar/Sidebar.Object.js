@@ -571,7 +571,7 @@ Sidebar.Object = function ( editor ) {
 
 		if ( object !== null ) {
 
-			
+
 			container.setDisplay( 'block' );
 			updateRows( object );
 			updateUI( object );
@@ -622,7 +622,7 @@ Sidebar.Object = function ( editor ) {
 		objectWeightRow.setDisplay('none');
 		objectConnectsRow.setDisplay('none');
 		objectNameRow.setDisplay('none');
-		
+
 		if(typeof Information[object.name] != 'undefined') {
 			objectType.setValue( Information[object.name].cellid );
 			if(Information[object.name].cellname !== 'undefined'){
@@ -653,7 +653,6 @@ Sidebar.Object = function ( editor ) {
 				objectConnects.setOptions( constring );
 				objectConnectsRow.setDisplay('block');
 			}
-			console.log(StateInformation[object.name].duality);
 			if(StateInformation[object.name].duality != ""){
 				objectDuality.setLabel( StateInformation[object.name].duality );
 				objectDualityRow.setDisplay('block');
@@ -802,7 +801,7 @@ Sidebar.Object = function ( editor ) {
 
 		}
 
-		
+
 
 		try {
 

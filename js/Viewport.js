@@ -158,14 +158,22 @@ var Viewport = function ( editor ) {
 	}
 
 	function handleClick() {
-
+		//TODO : selecting object 3D from viewport
 		if ( onDownPosition.distanceTo( onUpPosition ) === 0 ) {
 
 			var intersects = getIntersects( onUpPosition, objects );
 
 			if ( intersects.length > 0 ) {
 
+				/*
 				var object = intersects[ 0 ].object;
+				for ( var i = 0; i < intersects.length; i++ ) {
+						if(intersects[i].object.constructor === THREE.Object3D) {
+							//console.log(typeof intersects[i].object);
+							object = intersects[i].object;
+							break;
+						}
+				}
 
 				if ( object.userData.object !== undefined ) {
 
@@ -181,13 +189,11 @@ var Viewport = function ( editor ) {
 			} else {
 
 				editor.select( null );
-
+			*/
 			}
 
 			render();
-
 		}
-
 	}
 
 	function onMouseDown( event ) {
@@ -237,7 +243,10 @@ var Viewport = function ( editor ) {
 	}
 
 	function onDoubleClick( event ) {
-
+		editor.select( null );
+		render();
+		//TODO : focusing object from viewport
+		/*
 		var array = getMousePosition( container.dom, event.clientX, event.clientY );
 		onDoubleClickPosition.fromArray( array );
 
@@ -246,11 +255,17 @@ var Viewport = function ( editor ) {
 		if ( intersects.length > 0 ) {
 
 			var intersect = intersects[ 0 ];
+			for ( var i = 0; i < intersects.length; i++ ) {
+					if(typeof intersects[i].object === THREE.Object3D) {
+						intersect = intersects[i];
+						break;
+					}
+			}
 
 			signals.objectFocused.dispatch( intersect.object );
 
 		}
-
+*/
 	}
 
 	container.dom.addEventListener( 'mousedown', onMouseDown, false );
@@ -361,8 +376,7 @@ var Viewport = function ( editor ) {
 
 		if ( object !== null ) {
 
-			if ( object.geometry !== undefined &&
-				 object instanceof THREE.Sprite === false ) {
+			if (object instanceof THREE.Object3D === true) {
 
 				selectionBox.update( object );
 				selectionBox.visible = true;
