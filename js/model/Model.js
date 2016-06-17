@@ -351,14 +351,20 @@ node.prototype.childset = function(flag) {
 	}
 }
 node.prototype.parentset = function() {
-	if(this.childtrue == this.children.length) {
-		this.me.visible = true;
-	}
-	else if(this.childtrue == 0) {
+	if(this.childtrue == 0) {
 		this.me.visible = false;
 	}
 	else {
-		this.me.visible = null;
+		this.me.visible = true;
+	}
+	if(this.parent !== null) {
+		if(this.me.visible == true) {
+			this.parent.childtrue++;
+		}
+		else {
+			this.parent.childtrue--;
+		}
+		this.parent.parentset();
 	}
 }
 node.prototype.change = function(group) {
