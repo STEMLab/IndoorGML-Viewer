@@ -295,8 +295,9 @@ var InterLayerConnection = function() {
  Indoor.prototype.init = function(jsoncontent) {
  	floorflag = 0;
 	var maxmin_xyz = [];
-	var cells = jsoncontent.value.primalSpaceFeatures.primalSpaceFeatures.cellSpaceMember;
+	var cells = jsoncontent.value.primalSpaceFeatures;
 	if(typeof cells !=='undefined') {
+		cells = cells.primalSpaceFeatures.cellSpaceMember;
 		for(var i = 0; i < cells.length; i++){
 			var c = new CellSpace();
 			maxmin_xyz = c.init(cells[i].abstractFeature.value, maxmin_xyz);
