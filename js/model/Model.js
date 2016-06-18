@@ -15,35 +15,34 @@ Polygon.prototype.init = function(jsoncontent, maxmin_xyz) {
 			floorflag = 1;
 			maxmin_xyz = [point[0], point[1], point[2], point[0], point[1], point[2]];
 		}
-		else{
+		else {
 
-					maxmin_xyz[0]=Math.max(maxmin_xyz[0],point[0]);
-					maxmin_xyz[1]=Math.max(maxmin_xyz[1],point[1]);
-					maxmin_xyz[2]=Math.max(maxmin_xyz[2],point[2]);
-					maxmin_xyz[3]=Math.min(maxmin_xyz[3],point[0]);
-					maxmin_xyz[4]=Math.min(maxmin_xyz[4],point[1]);
-					maxmin_xyz[5]=Math.min(maxmin_xyz[5],point[2]);
+			maxmin_xyz[0] = Math.max(maxmin_xyz[0], point[0]);
+			maxmin_xyz[1] = Math.max(maxmin_xyz[1], point[1]);
+			maxmin_xyz[2] = Math.max(maxmin_xyz[2], point[2]);
+			maxmin_xyz[3] = Math.min(maxmin_xyz[3], point[0]);
+			maxmin_xyz[4] = Math.min(maxmin_xyz[4], point[1]);
+			maxmin_xyz[5] = Math.min(maxmin_xyz[5], point[2]);
 
 		}
-
-		//
 	}
 
 	var ipoints = jsoncontent.interior;
-	if(typeof ipoints !== 'undefined'){
+	if(typeof ipoints !== 'undefined') {
 		ipoints = ipoints[0].abstractRing.value.posOrPointPropertyOrPointRep;
-		for(var i = 0; i < ipoints.length; i++){
+		for(var i = 0; i < ipoints.length; i++) {
 			var point = [ipoints[i].value.value[0], ipoints[i].value.value[2], ipoints[i].value.value[1]];
 			this.interior = this.interior.concat(point);
 		}
 	}
+	GmlIdMap[this.polyonid] = this;
 	return maxmin_xyz;
 };
 var CellSpace = function() {
 	this.cellid;
-	this.cellname;
+	this.cellname ="";
 	this.geometry = []; //Polygon array
-	this.duality;
+	this.duality ="";
 	this.partialboundedBy;
 }
 CellSpace.prototype.init = function(jsoncontent, maxmin_xyz) {
@@ -52,15 +51,12 @@ CellSpace.prototype.init = function(jsoncontent, maxmin_xyz) {
 	if(typeof n !=='undefined') {
 		this.cellname = n[0].value;
 	}
-	else {
-		this.cellname = "";
-	}
-	//console.log(this.cellname);
+
 	var du = jsoncontent.duality;
 	if(typeof du !=='undefined') {
 		this.duality = du.href;
 	}
-	else this.duality = "";
+
 	var bound = jsoncontent.partialboundedBy;
 		if(typeof bound !=='undefined') {
 			this.partialboundedBy = bound[0].href;
@@ -77,14 +73,15 @@ CellSpace.prototype.init = function(jsoncontent, maxmin_xyz) {
 	else {
 		geod=jsoncontent.geometry2D;
 	}
+	GmlIdMap[this.cellid] = this;
 	return maxmin_xyz;
 };
 
 var CellSpaceBoundary = function() {
 	this.cellBoundaryid;
-	this.cellBoundaryname;
-	this.geometry = []; //float array
-	this.duality;
+	this.cellBoundaryname = "";
+	this.geometry; //polygon
+	this.duality = "";
 }
  CellSpaceBoundary.prototype.init = function(jsoncontent, maxmin_xyz) {
 	this.cellBoundaryid = jsoncontent.id;
@@ -92,38 +89,66 @@ var CellSpaceBoundary = function() {
 	if(typeof n !=='undefined') {
 		this.cellBoundaryname = n[0].value;
 	}
-	else {
-		this.cellBoundaryname = "";
-	}
+
 	//console.log(this.cellname);
 	var du = jsoncontent.duality;
-	if(typeof du !=='undefined'){
+	if(typeof du !=='undefined') {
 		this.duality = du.href;
 	}
-	else this.duality = "";
 
 	var geod = jsoncontent.geometry3D;
-	if(typeof geod !== 'undefined'){
-		var points = geod.abstractSurface.value.exterior.abstractRing.value.posOrPointPropertyOrPointRep;
-		for(var i = 0; i < points.length; i++){
-			var temp = points[i].value.value;
-			this.geometry = this.geometry.concat([temp[0], temp[2], temp[1]]);
+	if(typeof geod !== 'undefined') {
+		var temp = geod.abstractSurface.value.exterior;
+		if(typeof temp !== 'undefined') {
+			var polygon = new Polygon();
+			maxmin_xyz = polygon.init(geod.abstractSurface.value, maxmin_xyz);
+			this.geometry = polygon;
 		}
+		else {
+			var xlink = geod.abstractSurface.value.baseSurface.href;
+			xlink = xlink.substr(1, xlink.length);
+			for(var id in GmlIdMap) {
+				if(id == xlink) {
+					var orientation = geod.abstractSurface.value.orientation;
+					if(orientation == "-") {
+						var polygon = new Polygon();
+						polygon.polyonid = GmlIdMap[xlink].polyonid;
+						var temp = [];
+						for(var i = GmlIdMap[xlink].exterior.length - 1; i >= 0; i--) {
+							temp.push(GmlIdMap[xlink].exterior[i]);
+						}
+						temp = [];
+						for(var i = GmlIdMap[xlink].interior.length - 1; i >= 0; i--) {
+							temp.push(GmlIdMap[xlink].interior[i]);
+						}
+						this.geometry = polygon;
+					}
+					else {
+						this.geometry = GmlIdMap[xlink];
+					}
+					break;
+				}
+			}
+			if(this.geometry == 'undefined') 
+				PlaceHolder[xlink] = this;
+		
+		}
+		
 	}
 	else{
-		geod=jsoncontent.geometry2D;
+		geod = jsoncontent.geometry2D;
 	}
+	GmlIdMap[this.cellBoundaryid] = this;
 	return maxmin_xyz;
 };
 
 
-
 var State = function() {
 	this.stateid;
-	this.statename;
+	this.statename = "";
 	this.position = [];
 	this.connects = [];
-	this.duality;
+	this.duality = "";
 }
  State.prototype.init = function(jsoncontent,maxmin_xyz) {
 	//console.log(JSON.stringify(jsoncontent, null, 2));
@@ -132,14 +157,11 @@ var State = function() {
 	if(typeof n !=='undefined') {
 		this.statename = n[0].value;
 	}
-	else {
-		this.statename = "";
-	}
+
 	var du=jsoncontent.duality;
 	if(typeof du !== 'undefined') {
 		this.duality = du.href;
 	}
-	else this.duality = ""
 
 	var cons = jsoncontent.connects;
 	if(typeof cons !== 'undefined') {
@@ -164,6 +186,7 @@ var State = function() {
 			maxmin_xyz[5] = Math.min(maxmin_xyz[5], point[1]);
 		}
 	}
+	GmlIdMap[this.stateid] = this;
 	return maxmin_xyz;
 	//console.log(this.position);
 };
@@ -174,10 +197,10 @@ var State = function() {
 var Transition = function() {
 	this.transitionid;
 	this.weight;
-	this.transitionname;
+	this.transitionname = "";
 	this.connects = []; //array of size 2
 	this.line = []; //point array
-	this.duality;
+	this.duality = "";
 }
  Transition.prototype.init = function(jsoncontent,maxmin_xyz) {
 	this.transitionid = jsoncontent.id;
@@ -185,20 +208,16 @@ var Transition = function() {
 	if(typeof jsoncontent.name !== 'undefined') {
 		this.transitionname = jsoncontent.name[0].value;
 	}
-	else {
-		this.transitionname = "";
-	}
+
 	if(typeof jsoncontent.weight !== 'undefined') {
 		this.weight = jsoncontent.weight;
 	}
 	
 	var du = jsoncontent.duality;
-	if(typeof du == 'undefined') {
-		this.duality = "";
-	}
-	else {
+	if(typeof du !== 'undefined') {
 		this.duality = du.href;
 	}
+
 	var cons = jsoncontent.connects;
 	for(var i = 0; i < cons.length; i++) {
 		this.connects.push(cons[i].href);
@@ -206,7 +225,7 @@ var Transition = function() {
 	var geometry = jsoncontent.geometry;
 	if(typeof geometry !== 'undefined') {
 		geometry = geometry.abstractCurve.value.posOrPointPropertyOrPointRep;
-		for(var i = 0; i < geometry.length; i++){
+		for(var i = 0; i < geometry.length; i++) {
 			var point = geometry[i].value.value;
 			this.line = this.line.concat([point[0], point[2], point[1]]);
 			if(floorflag == 0) {
@@ -214,22 +233,22 @@ var Transition = function() {
 				maxmin_xyz = [point[0], point[2], point[1], point[0], point[2], point[1]];
 			}
 			else {
-				maxmin_xyz[0]=Math.max(maxmin_xyz[0],point[0]);
-				maxmin_xyz[1]=Math.max(maxmin_xyz[1],point[2]);
-				maxmin_xyz[2]=Math.max(maxmin_xyz[2],point[1]);
-				maxmin_xyz[3]=Math.min(maxmin_xyz[3],point[0]);
-				maxmin_xyz[4]=Math.min(maxmin_xyz[4],point[2]);
-				maxmin_xyz[5]=Math.min(maxmin_xyz[5],point[1]);
+				maxmin_xyz[0] = Math.max(maxmin_xyz[0], point[0]);
+				maxmin_xyz[1] = Math.max(maxmin_xyz[1], point[2]);
+				maxmin_xyz[2] = Math.max(maxmin_xyz[2], point[1]);
+				maxmin_xyz[3] = Math.min(maxmin_xyz[3], point[0]);
+				maxmin_xyz[4] = Math.min(maxmin_xyz[4], point[2]);
+				maxmin_xyz[5] = Math.min(maxmin_xyz[5], point[1]);
 			}
 		}
 	}
+	GmlIdMap[this.transitionid] = this;
 	return maxmin_xyz;
-	//console.log(this.line);
 };
 
 var Graph = function() {
 	this.graphid;
-	this.graphname;
+	this.graphname = "";
 	this.stateMember = []; //State array
 	this.transitionMember = []; //Transition array
 }
@@ -241,14 +260,8 @@ var Graph = function() {
 	var name = jsoncontent.name;
 	if(typeof name !== 'undefined') {
 		this.graphname = name[0].value
-		if(typeof this.graphname == 'undefined'){
-			this.graphname = "";
+	}
 
-		}
-	}
-	else {
-		this.graphname = this.graphid;
-	}
 
 
 	var states = jsoncontent.nodes[0].stateMember;
@@ -261,7 +274,7 @@ var Graph = function() {
 	}
 
 
-	var trans=jsoncontent.edges[0].transitionMember;
+	var trans = jsoncontent.edges[0].transitionMember;
 	if(typeof trans !== 'undefined'){
 		for(var i = 0; i < trans.length; i++) {
 			var transition = new Transition();
@@ -269,6 +282,7 @@ var Graph = function() {
 			this.transitionMember.push(transition);
 		}
 	}
+	GmlIdMap[this.graphid] = this;
 	return maxmin_xyz;
 };
 

@@ -42,7 +42,7 @@ var Loader = function ( editor ) {
 					var indoorgmlLoader = new IndoorGMLLoader();
 
 					var data = indoorgmlLoader.unmarshal(contents);
-					//console.log(data);
+					console.log(data);
 					//var worker = require('webworkify')(require('./loader/IndoorGMLLoader.js'));
 					//worker.addEventListener('message', function (ev) {
 					 	console.log("receive json!!");

@@ -65,11 +65,15 @@ SetIndoorGMLCommand.prototype = {
     var cellboundary = indoor.cellSpaceBoundaryMember;
     
     for(var j = 0; j < cellboundary.length; j++) {
+      if(cellboundary[j].xlink == ""){
         this.transformCoordinates(cellboundary[j].geometry);
         var surface = this.triangulate(cellboundary[j].geometry, []);
         BoundaryDictionary[ cellboundary[j].cellBoundaryid ] = surface;
         BoundaryInformation[ cellboundary[j].cellBoundaryid ] = cellboundary[j];
+      }
     }
+
+   
     
     
     var graphs = indoor.multiLayeredGraph;
