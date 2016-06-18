@@ -309,22 +309,27 @@ var InterLayerConnection = function() {
  Indoor.prototype.init = function(jsoncontent) {
  	floorflag = 0;
 	var maxmin_xyz = [];
-	var cells = jsoncontent.value.primalSpaceFeatures.primalSpaceFeatures.cellSpaceMember;
-	if(typeof cells !=='undefined') {
-		for(var i = 0; i < cells.length; i++){
-			var c = new CellSpace();
-			maxmin_xyz = c.init(cells[i].abstractFeature.value, maxmin_xyz);
-			this.primalSpaceFeature.push(c);
+	var primalspace = jsoncontent.value.primalSpaceFeatures;
+	if(typeof primalspace !== 'undefined') {
+		var cells = primalspace.primalSpaceFeatures.cellSpaceMember;
+		if(typeof cells !=='undefined') {
+			for(var i = 0; i < cells.length; i++){
+				var c = new CellSpace();
+				maxmin_xyz = c.init(cells[i].abstractFeature.value, maxmin_xyz);
+				this.primalSpaceFeature.push(c);
+			}
+		}
+		var cellboundarys = primalspace.primalSpaceFeatures.cellSpaceBoundaryMember;
+		if(typeof cellboundarys !=='undefined') {
+			
+			for(var i = 0; i < cellboundarys.length; i++) {
+				var cb = new CellSpaceBoundary();
+				maxmin_xyz = cb.init(cellboundarys[i].abstractFeature.value, maxmin_xyz);
+				this.cellSpaceBoundaryMember.push(cb);
+			}
 		}
 	}
-	var cellboundarys = jsoncontent.value.primalSpaceFeatures.primalSpaceFeatures.cellSpaceBoundaryMember;
-	if(typeof cellboundarys !=='undefined') {
-		for(var i = 0; i < cellboundarys.length; i++) {
-			var cb = new CellSpaceBoundary();
-			maxmin_xyz = cb.init(cellboundarys[i].abstractFeature.value, maxmin_xyz);
-			this.cellSpaceBoundaryMember.push(cb);
-		}
-	}
+	
 
 	var layers = jsoncontent.value.multiLayeredGraph.spaceLayers[0].spaceLayerMember;
 	//layers[0].space
@@ -365,14 +370,20 @@ node.prototype.childset = function(flag) {
 	}
 }
 node.prototype.parentset = function() {
-	if(this.childtrue == this.children.length) {
-		this.me.visible = true;
-	}
-	else if(this.childtrue == 0) {
+	if(this.childtrue == 0) {
 		this.me.visible = false;
 	}
 	else {
-		this.me.visible = null;
+		this.me.visible = true;
+	}
+	if(this.parent !== null) {
+		if(this.me.visible == true) {
+			this.parent.childtrue++;
+		}
+		else {
+			this.parent.childtrue--;
+		}
+		this.parent.parentset();
 	}
 }
 node.prototype.change = function(group) {
