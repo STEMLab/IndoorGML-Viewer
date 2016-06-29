@@ -8,22 +8,24 @@ we used [Three.js](http://threejs.org/), [browserify](http://browserify.org/), [
 2. open index.html in your chrome.
 3. that's it.
 
-### Prerequisities
+### functional specification
 
-What things you need to install the software and how to install them
+### side bar
 
-```
-Give examples
-```
+#### SCENE
 
-## Built With
+after import indoorGML file, you can see tree view in this tab.
+whenever you click element, you can see not only details of element in PROPERTIES tab,
+but also geometry highlighted in Viewer.
 
-* Sublime Text - 
-* Atom - 
+#### PROPERTIES
 
-## Contributing
+this show id, name, xlink of connected element, duality and so on about clicked element.
 
-## Versioning
+#### VIEW
+
+you can change visibility of clicked element and size of state using this tab.
+
 
 ## Authors
 
@@ -31,9 +33,6 @@ Give examples
 * **Hg Ryoo** - *Initial work* - [STEM](https://github.com/STEMLab)
 
 ## License
-
+```
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
-
-## Acknowledgments
-
-* etc
+```
