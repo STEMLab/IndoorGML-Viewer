@@ -1,16 +1,8 @@
 this.floorflag = 0;
-
-var Polygon = function() {
-	this.polyonid;
-	this.exterior = []; //float array[1,2,3,4,5,6]
-	this.interior = [];
-}
-Polygon.prototype.init = function(jsoncontent, maxmin_xyz) {
-	this.polyonid = jsoncontent.id;
-	var epoints = jsoncontent.exterior.abstractRing.value.posOrPointPropertyOrPointRep;
-	for(var i = 0; i < epoints.length; i++) {
-		var point = [epoints[i].value.value[0], epoints[i].value.value[2], epoints[i].value.value[1]];
-		this.exterior = this.exterior.concat(point);
+function parsePosOrPointPropertyOrPointRep(points,target,maxmin_xyz) {
+	for(var i = 0; i < points.length; i++) {
+		var point = [points[i].value.value[0], points[i].value.value[2], points[i].value.value[1]];
+		target.push(point[0],point[1],point[2]);
 		if(floorflag == 0) {
 			floorflag = 1;
 			maxmin_xyz = [point[0], point[1], point[2], point[0], point[1], point[2]];
@@ -26,24 +18,46 @@ Polygon.prototype.init = function(jsoncontent, maxmin_xyz) {
 
 		}
 	}
+	return maxmin_xyz;
+}
+var Polygon = function() {
+	this.polyonid;
+	this.exterior = []; //float array[1,2,3,4,5,6]
+	this.interior = [];
+}
+Polygon.prototype.init = function(jsoncontent, maxmin_xyz) {
+	this.polyonid = jsoncontent.id;
+	var epoints = jsoncontent.exterior.abstractRing.value.posOrPointPropertyOrPointRep;
+	maxmin_xyz = parsePosOrPointPropertyOrPointRep(epoints,this.exterior,maxmin_xyz);
 
 	var ipoints = jsoncontent.interior;
 	if(typeof ipoints !== 'undefined') {
 		ipoints = ipoints[0].abstractRing.value.posOrPointPropertyOrPointRep;
-		for(var i = 0; i < ipoints.length; i++) {
-			var point = [ipoints[i].value.value[0], ipoints[i].value.value[2], ipoints[i].value.value[1]];
-			this.interior = this.interior.concat(point);
+		maxmin_xyz = parsePosOrPointPropertyOrPointRep(ipoints,this.interior,maxmin_xyz);
+	}
+	for(var key in PlaceHolder) {
+		if(key == this.polyonid) {
+			var temp = new Polygon();
+			temp.polyonid = this.polyonid + "_1";
+			for(var i = this.exterior.length - 1; i >= 0; i--) {
+				temp.exterior.push(this.exterior[i]);
+			}
+			for(var i = this.interior.length - 1; i >= 0; i--) {
+				temp.interior.push(this.interior[i]);
+			}
+			PlaceHolder[key].push(temp);
+			break;
 		}
 	}
 	GmlIdMap[this.polyonid] = this;
 	return maxmin_xyz;
-};
+}
 var CellSpace = function() {
 	this.cellid;
 	this.cellname ="";
 	this.geometry = []; //Polygon array
 	this.duality ="";
-	this.partialboundedBy;
+	this.partialboundedBy;//boundarysurface
 }
 CellSpace.prototype.init = function(jsoncontent, maxmin_xyz) {
 	this.cellid = jsoncontent.id;
@@ -72,15 +86,23 @@ CellSpace.prototype.init = function(jsoncontent, maxmin_xyz) {
 	}
 	else {
 		geod=jsoncontent.geometry2D;
+		if(typeof geod !== 'undefined') {
+			var temp = geod.abstractSurface.value.exterior;
+			if(typeof temp !== 'undefined') {
+				var polygon = new Polygon();
+				maxmin_xyz = polygon.init(geod.abstractSurface.value, maxmin_xyz);
+				this.geometry.push(polygon);
+			}
+		}
 	}
-	GmlIdMap[this.cellid] = this;
+	//GmlIdMap[this.cellid] = this;
 	return maxmin_xyz;
 };
 
 var CellSpaceBoundary = function() {
 	this.cellBoundaryid;
 	this.cellBoundaryname = "";
-	this.geometry; //polygon
+	this.geometry = []; //polygon
 	this.duality = "";
 }
  CellSpaceBoundary.prototype.init = function(jsoncontent, maxmin_xyz) {
@@ -102,41 +124,44 @@ var CellSpaceBoundary = function() {
 		if(typeof temp !== 'undefined') {
 			var polygon = new Polygon();
 			maxmin_xyz = polygon.init(geod.abstractSurface.value, maxmin_xyz);
-			this.geometry = polygon;
+			this.geometry.push(polygon);
 		}
 		else {
 			var xlink = geod.abstractSurface.value.baseSurface.href;
 			xlink = xlink.substr(1, xlink.length);
 			for(var id in GmlIdMap) {
 				if(id == xlink) {
-					var orientation = geod.abstractSurface.value.orientation;
-					if(orientation == "-") {
-						var polygon = new Polygon();
-						polygon.polyonid = GmlIdMap[xlink].polyonid;
-						var temp = [];
-						for(var i = GmlIdMap[xlink].exterior.length - 1; i >= 0; i--) {
-							temp.push(GmlIdMap[xlink].exterior[i]);
-						}
-						temp = [];
-						for(var i = GmlIdMap[xlink].interior.length - 1; i >= 0; i--) {
-							temp.push(GmlIdMap[xlink].interior[i]);
-						}
-						this.geometry = polygon;
+					var polygon = new Polygon();
+					polygon.polyonid = GmlIdMap[xlink].polyonid + "_1";
+					for(var i = GmlIdMap[xlink].exterior.length - 3; i >= 0; i-=3) {
+						polygon.exterior.push(GmlIdMap[xlink].exterior[i]);
+						polygon.exterior.push(GmlIdMap[xlink].exterior[i + 1]);
+						polygon.exterior.push(GmlIdMap[xlink].exterior[i + 2]);
 					}
-					else {
-						this.geometry = GmlIdMap[xlink];
+					for(var i = GmlIdMap[xlink].interior.length - 3; i >= 0; i-=3) {
+						polygon.interior.push(GmlIdMap[xlink].interior[i]);
+						polygon.interior.push(GmlIdMap[xlink].interior[i + 1]);
+						polygon.interior.push(GmlIdMap[xlink].interior[i + 2]);
 					}
+					this.geometry.push(polygon);
 					break;
 				}
 			}
 			if(this.geometry == 'undefined') 
-				PlaceHolder[xlink] = this;
+				PlaceHolder[xlink] = this.geometry;
 		
 		}
 		
 	}
 	else{
 		geod = jsoncontent.geometry2D;
+		if(typeof geometry !== 'undefined') {
+			geometry = geometry.abstractCurve.value.posOrPointPropertyOrPointRep;
+			maxmin_xyz = parsePosOrPointPropertyOrPointRep(geometry, this.geometry, maxmin_xyz);
+		}
+		else {
+			//how do I save linestring id?
+		}
 	}
 	GmlIdMap[this.cellBoundaryid] = this;
 	return maxmin_xyz;
@@ -186,7 +211,7 @@ var State = function() {
 			maxmin_xyz[5] = Math.min(maxmin_xyz[5], point[1]);
 		}
 	}
-	GmlIdMap[this.stateid] = this;
+	//GmlIdMap[this.stateid] = this;
 	return maxmin_xyz;
 	//console.log(this.position);
 };
@@ -225,24 +250,9 @@ var Transition = function() {
 	var geometry = jsoncontent.geometry;
 	if(typeof geometry !== 'undefined') {
 		geometry = geometry.abstractCurve.value.posOrPointPropertyOrPointRep;
-		for(var i = 0; i < geometry.length; i++) {
-			var point = geometry[i].value.value;
-			this.line = this.line.concat([point[0], point[2], point[1]]);
-			if(floorflag == 0) {
-				floorflag = 1;
-				maxmin_xyz = [point[0], point[2], point[1], point[0], point[2], point[1]];
-			}
-			else {
-				maxmin_xyz[0] = Math.max(maxmin_xyz[0], point[0]);
-				maxmin_xyz[1] = Math.max(maxmin_xyz[1], point[2]);
-				maxmin_xyz[2] = Math.max(maxmin_xyz[2], point[1]);
-				maxmin_xyz[3] = Math.min(maxmin_xyz[3], point[0]);
-				maxmin_xyz[4] = Math.min(maxmin_xyz[4], point[2]);
-				maxmin_xyz[5] = Math.min(maxmin_xyz[5], point[1]);
-			}
-		}
+		maxmin_xyz = parsePosOrPointPropertyOrPointRep(geometry, this.line, maxmin_xyz);
 	}
-	GmlIdMap[this.transitionid] = this;
+	//GmlIdMap[this.transitionid] = this;
 	return maxmin_xyz;
 };
 
@@ -282,7 +292,7 @@ var Graph = function() {
 			this.transitionMember.push(transition);
 		}
 	}
-	GmlIdMap[this.graphid] = this;
+	//GmlIdMap[this.graphid] = this;
 	return maxmin_xyz;
 };
 

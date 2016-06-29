@@ -442,8 +442,7 @@ Editor.prototype = {
 		Information = {}; //cells
 		StateInformation = {}; //states
 		TransitionInformation = {}; //transtions
-		GraphInformation = {}; //graphs
-
+		
 		this.signals.editorCleared.dispatch();
 
 	},
