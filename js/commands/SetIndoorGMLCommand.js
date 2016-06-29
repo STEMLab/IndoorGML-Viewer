@@ -65,13 +65,13 @@ SetIndoorGMLCommand.prototype = {
     var cellboundary = indoor.cellSpaceBoundaryMember;
     
       for(var j = 0; j < cellboundary.length; j++) {
-        if(cellboundary[0].geometry.length == 1) {
+        if(cellboundary[0].geometry[0] instanceof Polygon) {
           this.transformCoordinates(cellboundary[j].geometry[0].exterior);
           var surface = this.triangulate(cellboundary[j].geometry[0].exterior, []);
         }
         else {
-          this.transformCoordinates(cellboundary[j].geometry);
-          var surface = this.triangulate(cellboundary[j].geometry, []);
+          this.transformCoordinates(cellboundary[j].geometry[0].points);
+          var surface = cellboundary[j].geometry[0].points;
         }
         BoundaryDictionary[ cellboundary[j].cellBoundaryid ] = surface;
         BoundaryInformation[ cellboundary[j].cellBoundaryid ] = cellboundary[j];
@@ -173,12 +173,12 @@ SetIndoorGMLCommand.prototype = {
     for(var key in BoundaryDictionary) {
       var cellSpaceBoundaryMember = new THREE.Object3D;
       cellSpaceBoundaryMember.name = key;
+  
       var geometry = new THREE.BufferGeometry();
       var vertices = new Float32Array( BoundaryDictionary[key] );
       geometry.addAttribute('position', new THREE.BufferAttribute( vertices, 3 ) );
       var material = new THREE.MeshBasicMaterial( { color: 0x00ffff, opacity:0.3, transparent : true, side: THREE.DoubleSide} );
       var mesh = new THREE.Mesh( geometry, material );
-
       cellSpaceBoundaryMember.add( mesh );
       AllGeometry[key] = cellSpaceBoundaryMember;
       cellSpaceBoundary.add( cellSpaceBoundaryMember );
