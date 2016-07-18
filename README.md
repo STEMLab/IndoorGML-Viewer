@@ -30,7 +30,7 @@ you can change visibility of clicked element and size of state using this tab.
 ## Authors
 
 * **Soojin Kim** - *Initial work* - [STEM](https://github.com/STEMLab)
-* **Hg Ryoo** - *Initial work* - [STEM](https://github.com/STEMLab)
+* **Hyung-Gyu Ryoo** - *Initial work* - [STEM](https://github.com/STEMLab)
 
 ## License
 ```
