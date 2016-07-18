@@ -29,8 +29,8 @@ you can change visibility of clicked element and size of state using this tab.
 
 ## Authors
 
-* **Soojin Kim** - *Initial work* - [STEM](https://github.com/STEMLab)
-* **Hyung-Gyu Ryoo** - *Initial work* - [STEM](https://github.com/STEMLab)
+* **Soojin Kim** - *Initial work* - soojin.kim@pnu.edu
+* **Hyung-Gyu Ryoo** - *Initial work* - hgryoo@pnu.edu
 
 ## License
 ```
