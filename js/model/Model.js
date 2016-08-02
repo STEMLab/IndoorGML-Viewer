@@ -1,7 +1,7 @@
 this.floorflag = 0;
 function parsePosOrPointPropertyOrPointRep(points,target,maxmin_xyz) {
 	for(var i = 0; i < points.length; i++) {
-		var point = [points[i].value.value[0], points[i].value.value[2], points[i].value.value[1]];
+		var point = [points[i].value.value[0], points[i].value.value[2], -points[i].value.value[1]];
 		target.push(point[0],point[1],point[2]);
 		if(floorflag == 0) {
 			floorflag = 1;
@@ -251,18 +251,18 @@ var State = function() {
 	var geometry = jsoncontent.geometry;
 	if(typeof geometry !== 'undefined') {
 		var point = geometry.point.pos.value;
-		this.position = [point[0], point[2], point[1]];
+		this.position = [point[0], point[2], -point[1]];
 		if(floorflag == 0) {
 			floorflag = 1;
-			maxmin_xyz = [point[0], point[2], point[1], point[0], point[2], point[1]];
+			maxmin_xyz = [point[0], point[2], -point[1], point[0], point[2], -point[1]];
 		}
 		else {
 			maxmin_xyz[0] = Math.max(maxmin_xyz[0], point[0]);
 			maxmin_xyz[1] = Math.max(maxmin_xyz[1], point[2]);
-			maxmin_xyz[2] = Math.max(maxmin_xyz[2], point[1]);
+			maxmin_xyz[2] = Math.max(maxmin_xyz[2], -point[1]);
 			maxmin_xyz[3] = Math.min(maxmin_xyz[3], point[0]);
 			maxmin_xyz[4] = Math.min(maxmin_xyz[4], point[2]);
-			maxmin_xyz[5] = Math.min(maxmin_xyz[5], point[1]);
+			maxmin_xyz[5] = Math.min(maxmin_xyz[5], -point[1]);
 		}
 	}
 	//GmlIdMap[this.stateid] = this;
