@@ -1,6 +1,6 @@
 # WebGL IndoorGML Viewer
 
-we used [Three.js](http://threejs.org/), [browserify](http://browserify.org/), [jsonix](https://github.com/highsource/jsonix)
+we used [Three.js](http://threejs.org/), [browserify](http://browserify.org/) and [jsonix](https://github.com/highsource/jsonix)
 
 ## Getting Started
 ```
